@@ -37,8 +37,8 @@ export default function Home() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 600 }), y: spring(0, { delay: 600 }) }}>
             {(style) => (
               <div className="flex flex-col md:flex-row gap-4 justify-center" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                <Link href="/characters" className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg">
-                  Explorar Missões
+                <Link href="/profile" className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg">
+                  Meu Perfil
                 </Link>
                 <Link href="/ranking" className="inline-block bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition border border-slate-500">
                   Ranking Global
@@ -146,13 +146,13 @@ export default function Home() {
                   Pronto para se juntar?
                 </h3>
                 <p className="text-gray-300 text-xl mb-8">
-                  Explore as missões disponíveis e descubra seu potencial como agente da V.I.G.I.A.
+                  Explore seu potencial como agente da V.I.G.I.A. e assuma seu lugar na história.
                 </p>
                 <Link
-                  href="/characters"
+                  href="/profile"
                   className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg"
                 >
-                  Começar Agora
+                  Acessar Perfil
                 </Link>
               </div>
             )}

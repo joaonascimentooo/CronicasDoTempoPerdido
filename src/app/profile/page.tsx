@@ -6,6 +6,8 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
+import { Motion, spring } from 'react-motion';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,7 +39,11 @@ export default function ProfilePage() {
   }, [router]);
 
   if (loading) {
-    return <div className="text-center text-2xl">Carregando...</div>;
+    return (
+      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-xl text-orange-400 font-bold">Carregando seu perfil...</div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -46,194 +52,276 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="space-y-8">
-        <h1 className="text-4xl font-bold">Meu Perfil</h1>
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 text-center">
-          <div className="text-4xl mb-4">👤</div>
-          <p className="text-gray-400 mb-6">Você ainda não criou seu perfil</p>
-          <button
-            onClick={() => router.push('/profile/setup')}
-            className="inline-block bg-orange-600 hover:bg-orange-700 px-8 py-3 rounded-lg font-bold transition"
-          >
-            Criar Meu Perfil
-          </button>
+      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative px-6">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+
+        <div className="relative z-10 text-center max-w-2xl">
+          <Motion defaultStyle={{ opacity: 0, y: -20 }} style={{ opacity: spring(1), y: spring(0) }}>
+            {(style) => (
+              <>
+                <div className="text-6xl mb-6" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                  👤
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4" style={{ opacity: style.opacity }}>
+                  Perfil Vazio
+                </h2>
+                <p className="text-gray-300 text-lg mb-8" style={{ opacity: style.opacity }}>
+                  Você ainda não criou seu perfil. Configure seu personagem para começar sua jornada como agente da V.I.G.I.A.
+                </p>
+                <button
+                  onClick={() => router.push('/profile/setup')}
+                  className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg"
+                  style={{ opacity: style.opacity }}
+                >
+                  Criar Meu Perfil
+                </button>
+              </>
+            )}
+          </Motion>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-4xl font-bold">Meu Perfil</h1>
-          <p className="text-gray-400 mt-2">{profile.email}</p>
-        </div>
-      </div>
+    <div className="w-full">
+      {/* Hero Section com Avatar */}
+      <section className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative px-6 pt-24">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Avatar e Informações Principais */}
-        <div className="lg:col-span-1">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-            {profile.imageUrl && (
-              <div className="w-full h-80 bg-gray-700 overflow-hidden">
-                <img
-                  src={profile.imageUrl}
-                  alt={profile.username}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-2">{profile.username}</h2>
-              <p className="text-orange-500 font-bold text-lg mb-4">{profile.class}</p>
-
-              <div className="space-y-3 mb-4">
-                <div>
-                  <span className="text-gray-400 text-sm">Nível</span>
-                  <div className="text-3xl font-bold text-orange-500">{profile.level}</div>
-                </div>
-                <div>
-                  <span className="text-gray-400 text-sm">Experiência</span>
-                  <div className="font-bold">{profile.experience} XP</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-orange-500 h-2 rounded-full"
-                      style={{
-                        width: `${(profile.experience % 100)}%`,
-                      }}
-                    ></div>
+        <div className="relative z-10 w-full max-w-5xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Avatar */}
+            <Motion defaultStyle={{ opacity: 0, x: -40 }} style={{ opacity: spring(1), x: spring(0) }}>
+              {(style) => (
+                <div style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}>
+                  <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-2xl overflow-hidden shadow-2xl">
+                    {profile.imageUrl ? (
+                      <img
+                        src={profile.imageUrl}
+                        alt={profile.username}
+                        className="w-full h-auto object-cover"
+                      />
+                    ) : (
+                      <div className="w-full aspect-square bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-6xl">
+                        👤
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
+            </Motion>
 
-              {profile.faction && (
-                <div className="pt-4 border-t border-gray-700">
-                  <span className="text-gray-400 text-sm">Facção</span>
-                  <div className="font-bold">{profile.faction}</div>
+            {/* Info */}
+            <Motion defaultStyle={{ opacity: 0, x: 40 }} style={{ opacity: spring(1), x: spring(0) }}>
+              {(style) => (
+                <div style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}>
+                  <p className="text-orange-400 font-bold text-lg mb-2">{profile.class}</p>
+                  <h1 className="text-6xl md:text-7xl font-black text-white mb-4">{profile.username}</h1>
+
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-4 mb-4">
+                      <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
+                        Nível {profile.level}
+                      </span>
+                      <span className="text-gray-400">Agente da V.I.G.I.A.</span>
+                    </div>
+
+                    <div className="mb-6">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-gray-300 text-sm">Experiência</span>
+                        <span className="text-orange-400 font-bold">{profile.experience} XP</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-orange-500/30">
+                        <div
+                          className="bg-gradient-to-r from-orange-400 to-orange-500 h-full rounded-full"
+                          style={{
+                            width: `${(profile.experience % 100)}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {profile.faction && (
+                    <p className="text-gray-300 mb-8">
+                      <span className="text-orange-400 font-bold">Facção:</span> {profile.faction}
+                    </p>
+                  )}
+
+                  <Link
+                    href="/profile/edit"
+                    className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105"
+                  >
+                    Editar Perfil
+                  </Link>
                 </div>
               )}
-
-              <button
-                onClick={() => router.push('/profile/edit')}
-                className="w-full mt-6 bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded font-bold transition"
-              >
-                Editar Perfil
-              </button>
-            </div>
+            </Motion>
           </div>
         </div>
+      </section>
 
-        {/* Estatísticas e Informações */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Saúde */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <h3 className="text-lg font-bold mb-4">Saúde</h3>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">HP</span>
-              <span className="font-bold">
-                {profile.health}/{profile.maxHealth}
-              </span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-4">
-              <div
-                className="bg-red-500 h-4 rounded-full"
-                style={{
-                  width: `${(profile.health / profile.maxHealth) * 100}%`,
-                }}
-              ></div>
-            </div>
+      {/* Stats Section */}
+      <section className="w-full py-24 px-6 bg-slate-800 flex justify-center">
+        <div className="w-full max-w-6xl">
+          <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
+            {(style) => (
+              <div className="text-center mb-16" style={{ opacity: style.opacity }}>
+                <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  Suas Estatísticas
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+              </div>
+            )}
+          </Motion>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { label: 'Nível', value: profile.level, color: 'text-orange-400' },
+              { label: 'Criaturas Mortas', value: profile.creatureKills, color: 'text-orange-400' },
+              { label: 'Mortes', value: profile.deaths, color: 'text-red-500' },
+              { label: 'Ouro', value: profile.gold, color: 'text-yellow-500' },
+            ].map((stat, index) => (
+              <Motion
+                key={index}
+                defaultStyle={{ opacity: 0, y: 20 }}
+                style={{ opacity: spring(1, { delay: 400 + index * 100 }), y: spring(0, { delay: 400 + index * 100 }) }}
+              >
+                {(style) => (
+                  <div
+                    className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition"
+                    style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                  >
+                    <p className="text-gray-400 text-sm mb-2">{stat.label}</p>
+                    <p className={`text-4xl font-black ${stat.color}`}>{stat.value}</p>
+                  </div>
+                )}
+              </Motion>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Attributes Section */}
+      <section className="w-full py-24 px-6 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center">
+        <div className="w-full max-w-6xl">
+          <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
+            {(style) => (
+              <div className="text-center mb-16" style={{ opacity: style.opacity }}>
+                <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  Atributos
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+              </div>
+            )}
+          </Motion>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {[
+              { name: 'Força', value: profile.strength, color: 'text-red-400', icon: '⚔️' },
+              { name: 'Destreza', value: profile.dexterity, color: 'text-green-400', icon: '🎯' },
+              { name: 'Constituição', value: profile.constitution, color: 'text-yellow-400', icon: '❤️' },
+              { name: 'Inteligência', value: profile.intelligence, color: 'text-blue-400', icon: '🧠' },
+              { name: 'Sabedoria', value: profile.wisdom, color: 'text-purple-400', icon: '👁️' },
+              { name: 'Carisma', value: profile.charisma, color: 'text-pink-400', icon: '✨' },
+            ].map((attr, index) => (
+              <Motion
+                key={index}
+                defaultStyle={{ opacity: 0, y: 20 }}
+                style={{ opacity: spring(1, { delay: 500 + index * 80 }), y: spring(0, { delay: 500 + index * 80 }) }}
+              >
+                {(style) => (
+                  <div
+                    className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-6 transition transform hover:scale-105"
+                    style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                  >
+                    <div className="text-3xl mb-2">{attr.icon}</div>
+                    <p className="text-gray-400 text-sm mb-2">{attr.name}</p>
+                    <p className={`text-3xl font-black ${attr.color}`}>{attr.value}</p>
+                  </div>
+                )}
+              </Motion>
+            ))}
+          </div>
+
+          {/* Health and Mana */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 800 }), y: spring(0, { delay: 800 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-8"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <h3 className="text-2xl font-bold text-red-400 mb-6">❤️ Saúde</h3>
+                  <div className="mb-4">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-300">{profile.health} / {profile.maxHealth} HP</span>
+                      <span className="text-gray-400 text-sm">{Math.round((profile.health / profile.maxHealth) * 100)}%</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden border border-red-500/30">
+                      <div
+                        className="bg-gradient-to-r from-red-500 to-red-600 h-full rounded-full"
+                        style={{
+                          width: `${(profile.health / profile.maxHealth) * 100}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Motion>
 
             {profile.mana !== undefined && profile.maxMana !== undefined && (
-              <>
-                <div className="flex items-center justify-between mb-2 mt-4">
-                  <span className="text-gray-400">Mana</span>
-                  <span className="font-bold">
-                    {profile.mana}/{profile.maxMana}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-4">
+              <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 900 }), y: spring(0, { delay: 900 }) }}>
+                {(style) => (
                   <div
-                    className="bg-blue-500 h-4 rounded-full"
-                    style={{
-                      width: `${(profile.mana / profile.maxMana) * 100}%`,
-                    }}
-                  ></div>
-                </div>
-              </>
+                    className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-8"
+                    style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                  >
+                    <h3 className="text-2xl font-bold text-blue-400 mb-6">✨ Mana</h3>
+                    <div className="mb-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-gray-300">{profile.mana} / {profile.maxMana} MP</span>
+                        <span className="text-gray-400 text-sm">{Math.round((profile.mana / profile.maxMana) * 100)}%</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden border border-blue-500/30">
+                        <div
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                          style={{
+                            width: `${(profile.mana / profile.maxMana) * 100}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Motion>
             )}
           </div>
+        </div>
+      </section>
 
-          {/* Atributos */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <h3 className="text-lg font-bold mb-4">Atributos</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-gray-400 text-sm">Força</span>
-                <div className="text-2xl font-bold text-red-500">{profile.strength}</div>
-              </div>
-              <div>
-                <span className="text-gray-400 text-sm">Destreza</span>
-                <div className="text-2xl font-bold text-green-500">{profile.dexterity}</div>
-              </div>
-              <div>
-                <span className="text-gray-400 text-sm">Constituição</span>
-                <div className="text-2xl font-bold text-yellow-500">{profile.constitution}</div>
-              </div>
-              <div>
-                <span className="text-gray-400 text-sm">Inteligência</span>
-                <div className="text-2xl font-bold text-blue-500">{profile.intelligence}</div>
-              </div>
-              <div>
-                <span className="text-gray-400 text-sm">Sabedoria</span>
-                <div className="text-2xl font-bold text-purple-500">{profile.wisdom}</div>
-              </div>
-              <div>
-                <span className="text-gray-400 text-sm">Carisma</span>
-                <div className="text-2xl font-bold text-pink-500">{profile.charisma}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Estatísticas de Combate */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <h3 className="text-lg font-bold mb-4">Estatísticas de Combate</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <span className="text-gray-400 text-sm">Criaturas Mortas</span>
-                <div className="text-2xl font-bold text-orange-500">{profile.creatureKills}</div>
-              </div>
-              {profile.playerKills !== undefined && (
-                <div>
-                  <span className="text-gray-400 text-sm">Jogadores Mortos</span>
-                  <div className="text-2xl font-bold text-red-500">{profile.playerKills}</div>
+      {/* Description Section */}
+      {profile.description && (
+        <section className="w-full py-24 px-6 bg-slate-800 flex justify-center">
+          <div className="w-full max-w-4xl">
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1), y: spring(0) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-8"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <h3 className="text-3xl font-black text-orange-400 mb-6">Sobre Você</h3>
+                  <p className="text-gray-300 text-lg leading-relaxed">{profile.description}</p>
                 </div>
               )}
-              <div>
-                <span className="text-gray-400 text-sm">Mortes</span>
-                <div className="text-2xl font-bold text-red-600">{profile.deaths}</div>
-              </div>
-            </div>
+            </Motion>
           </div>
-
-          {/* Ouro */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <h3 className="text-lg font-bold mb-4">Recursos</h3>
-            <div>
-              <span className="text-gray-400 text-sm">Ouro</span>
-              <div className="text-3xl font-bold text-yellow-500">{profile.gold}</div>
-            </div>
-          </div>
-
-          {/* Descrição */}
-          {profile.description && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-lg font-bold mb-4">Sobre</h3>
-              <p className="text-gray-300">{profile.description}</p>
-            </div>
-          )}
-        </div>
-      </div>
+        </section>
+      )}
     </div>
   );
 }
