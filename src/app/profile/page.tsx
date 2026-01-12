@@ -221,12 +221,11 @@ export default function ProfilePage() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
+              { name: 'Agilidade', value: profile.dexterity, color: 'text-green-400', icon: '⚡' },
               { name: 'Força', value: profile.strength, color: 'text-red-400', icon: '⚔️' },
-              { name: 'Destreza', value: profile.dexterity, color: 'text-green-400', icon: '🎯' },
-              { name: 'Constituição', value: profile.constitution, color: 'text-yellow-400', icon: '❤️' },
-              { name: 'Inteligência', value: profile.intelligence, color: 'text-blue-400', icon: '🧠' },
-              { name: 'Sabedoria', value: profile.wisdom, color: 'text-purple-400', icon: '👁️' },
-              { name: 'Carisma', value: profile.charisma, color: 'text-pink-400', icon: '✨' },
+              { name: 'Intelecto', value: profile.intelligence, color: 'text-blue-400', icon: '🧠' },
+              { name: 'Vigor', value: profile.constitution, color: 'text-yellow-400', icon: '❤️' },
+              { name: 'Presença', value: profile.charisma, color: 'text-pink-400', icon: '✨' },
             ].map((attr, index) => (
               <Motion
                 key={index}

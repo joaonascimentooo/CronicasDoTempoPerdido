@@ -11,12 +11,11 @@ export interface UserProfile {
   maxHealth: number;
   mana?: number;
   maxMana?: number;
-  strength: number;
-  dexterity: number;
-  constitution: number;
-  intelligence: number;
-  wisdom: number;
-  charisma: number;
+  strength: number; // Força
+  dexterity: number; // Agilidade
+  constitution: number; // Vigor
+  intelligence: number; // Intelecto
+  charisma: number; // Presença
   creatureKills: number; // Número de criaturas mortas
   playerKills?: number; // PvP kills
   deaths: number;

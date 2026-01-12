@@ -87,7 +87,6 @@ export default function SetupProfile() {
         dexterity: 10,
         constitution: 10,
         intelligence: 10,
-        wisdom: 10,
         charisma: 10,
         creatureKills: 0,
         playerKills: 0,
