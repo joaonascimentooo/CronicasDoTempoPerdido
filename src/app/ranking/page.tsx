@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getGlobalRanking, getClassRanking, getTopCharacters } from '@/lib/characterService';
-import { RankingEntry, Character } from '@/lib/types';
+import { getGlobalRanking, getClassRanking, getTopProfiles } from '@/lib/profileService';
+import { RankingEntry, UserProfile } from '@/lib/types';
 
 const CLASSES = ['Guerreiro', 'Mago', 'Arqueiro', 'Clérigo', 'Ladrão'];
 
 export default function Ranking() {
   const [rankingType, setRankingType] = useState<'kills' | 'level' | 'class'>('kills');
   const [selectedClass, setSelectedClass] = useState('Guerreiro');
-  const [ranking, setRanking] = useState<(RankingEntry | Character)[]>([]);
+  const [ranking, setRanking] = useState<(RankingEntry | UserProfile)[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Ranking() {
         if (rankingType === 'kills') {
           data = await getGlobalRanking(50);
         } else if (rankingType === 'level') {
-          data = await getTopCharacters(50);
+          data = await getTopProfiles(50);
         } else {
           data = await getClassRanking(selectedClass, 50);
         }
@@ -41,7 +41,7 @@ export default function Ranking() {
     }
 
     if (ranking.length === 0) {
-      return <div className="text-center text-gray-400">Nenhum personagem encontrado</div>;
+      return <div className="text-center text-gray-400">Nenhum jogador encontrado</div>;
     }
 
     return (
@@ -50,7 +50,7 @@ export default function Ranking() {
           <thead>
             <tr className="border-b border-gray-700">
               <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">Personagem</th>
+              <th className="px-4 py-3 text-left">Jogador</th>
               <th className="px-4 py-3 text-left">Classe</th>
               <th className="px-4 py-3 text-center">Nível</th>
               <th className="px-4 py-3 text-center">Criaturas Mortas</th>
@@ -64,7 +64,7 @@ export default function Ranking() {
           </thead>
           <tbody>
             {ranking.map((entry, index) => {
-              const isRankingEntry = 'characterName' in entry;
+              const isRankingEntry = 'username' in entry && 'rank' in entry;
               return (
                 <tr
                   key={index}
@@ -73,15 +73,15 @@ export default function Ranking() {
                   <td className="px-4 py-3 font-bold text-orange-500">
                     {index + 1}
                   </td>
-                  <td className="px-4 py-3 font-bold">{isRankingEntry ? entry.characterName : entry.name}</td>
+                  <td className="px-4 py-3 font-bold">{isRankingEntry ? entry.username : entry.username}</td>
                   <td className="px-4 py-3 text-gray-400">
-                    {isRankingEntry ? entry.characterClass : entry.class}
+                    {isRankingEntry ? entry.userClass : entry.class}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {isRankingEntry ? entry.level : entry.level}
+                    {entry.level}
                   </td>
                   <td className="px-4 py-3 text-center font-bold text-orange-500">
-                    {isRankingEntry ? entry.creatureKills : entry.creatureKills}
+                    {entry.creatureKills}
                   </td>
                   {rankingType === 'kills' && isRankingEntry && (
                     <>
@@ -104,7 +104,6 @@ export default function Ranking() {
         <h1 className="text-4xl font-bold mb-2">Ranking Global</h1>
         <p className="text-gray-400">Veja como você se compara com outros jogadores</p>
       </div>
-
 
       <div className="flex flex-wrap gap-4 mb-6">
         <button
@@ -139,7 +138,6 @@ export default function Ranking() {
         </button>
       </div>
 
-
       {rankingType === 'class' && (
         <div className="flex flex-wrap gap-2">
           {CLASSES.map((cls) => (
@@ -157,7 +155,6 @@ export default function Ranking() {
           ))}
         </div>
       )}
-
 
       <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
         {renderRanking()}

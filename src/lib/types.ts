@@ -1,8 +1,9 @@
-// Tipos para o sistema de personagens
+// Tipos para o sistema de perfil do usuário
 
-export interface Character {
-  id?: string;
-  name: string;
+export interface UserProfile {
+  id: string; // Mesmo ID do usuário Firebase
+  email: string;
+  username: string;
   class: string; // Guerreiro, Mago, Arqueiro, etc
   level: number;
   experience: number;
@@ -22,12 +23,11 @@ export interface Character {
   gold: number;
   inventory: Item[];
   skills: Skill[];
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
   faction?: string; // Facção/Grupo do jogador
   description?: string;
-  imageUrl?: string;
+  imageUrl?: string; // URL do avatar/boneco do jogador
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Item {
@@ -60,8 +60,8 @@ export interface Creature {
 
 export interface RankingEntry {
   userId: string;
-  characterName: string;
-  characterClass: string;
+  username: string;
+  userClass: string;
   creatureKills: number;
   playerKills: number;
   deaths: number;

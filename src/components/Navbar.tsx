@@ -43,8 +43,8 @@ export default function Navbar() {
                 <Link href="/dashboard" className="text-gray-300 hover:text-white">
                   Dashboard
                 </Link>
-                <Link href="/characters" className="text-gray-300 hover:text-white">
-                  Personagens
+                <Link href="/profile" className="text-gray-300 hover:text-white">
+                  Meu Perfil
                 </Link>
                 <Link href="/ranking" className="text-gray-300 hover:text-white">
                   Ranking
