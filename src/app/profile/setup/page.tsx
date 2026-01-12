@@ -104,7 +104,8 @@ export default function SetupProfile() {
       router.push('/profile');
     } catch (error) {
       console.error('Erro ao criar perfil:', error);
-      alert('Erro ao criar perfil. Tente novamente.');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido. Tente novamente.';
+      alert(`Erro ao criar perfil: ${errorMessage}`);
     } finally {
       setSubmitting(false);
     }

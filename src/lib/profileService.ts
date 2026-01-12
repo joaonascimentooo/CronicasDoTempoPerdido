@@ -26,11 +26,17 @@ export async function createUserProfile(
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    await setDoc(doc(db, 'profiles', userId), {
-      ...newProfile,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    });
+    
+    // Remover campos undefined antes de salvar
+    const dataToSave = Object.fromEntries(
+      Object.entries({
+        ...newProfile,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      }).filter(([, value]) => value !== undefined)
+    );
+    
+    await setDoc(doc(db, 'profiles', userId), dataToSave);
     return newProfile;
   } catch (error) {
     console.error('Erro ao criar perfil:', error);
