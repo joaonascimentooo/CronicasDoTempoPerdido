@@ -4,7 +4,7 @@ export interface UserProfile {
   id: string; // Mesmo ID do usuário Firebase
   email: string;
   username: string;
-  class: string; // Guerreiro, Mago, Arqueiro, etc
+  class: string; // Ocultista, Especialista, Combatente
   level: number;
   experience: number;
   health: number;

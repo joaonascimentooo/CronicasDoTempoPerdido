@@ -6,8 +6,15 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { createUserProfile, getUserProfile } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
+import { Motion, spring } from 'react-motion';
 
-const CLASSES = ['Guerreiro', 'Mago', 'Arqueiro', 'Clérigo', 'Ladrão'];
+const CLASSES = ['Ocultista', 'Especialista', 'Combatente'];
+
+const CLASS_DESCRIPTIONS: Record<string, { description: string; emoji: string; color: string }> = {
+  Ocultista: { description: 'Manipulador de forças paranormais e magia oculta', emoji: '🔮', color: 'text-purple-400' },
+  Especialista: { description: 'Investigador e analista de anomalias paranormais', emoji: '🔬', color: 'text-blue-400' },
+  Combatente: { description: 'Guerreiro experiente contra entidades paranormais', emoji: '⚔️', color: 'text-red-400' },
+};
 
 export default function SetupProfile() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,7 +37,6 @@ export default function SetupProfile() {
       }
       setUser(currentUser);
 
-      // Verificar se já tem perfil
       try {
         const existingProfile = await getUserProfile(currentUser.uid);
         if (existingProfile) {
@@ -75,8 +81,8 @@ export default function SetupProfile() {
         experience: 0,
         health: 100,
         maxHealth: 100,
-        mana: formData.class === 'Mago' || formData.class === 'Clérigo' ? 100 : undefined,
-        maxMana: formData.class === 'Mago' || formData.class === 'Clérigo' ? 100 : undefined,
+        mana: formData.class === 'Ocultista' ? 100 : undefined,
+        maxMana: formData.class === 'Ocultista' ? 100 : undefined,
         strength: 10,
         dexterity: 10,
         constitution: 10,
@@ -105,7 +111,11 @@ export default function SetupProfile() {
   };
 
   if (loading) {
-    return <div className="text-center text-2xl">Carregando...</div>;
+    return (
+      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-xl text-orange-400 font-bold">Carregando...</div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -113,144 +123,199 @@ export default function SetupProfile() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">Criar Meu Perfil</h1>
-        <p className="text-gray-400">Configure seu personagem para começar sua jornada em V.I.G.I.A.</p>
-      </div>
+    <div className="w-full">
+      {/* Hero Section */}
+      <section className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative px-6 pt-24">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-      <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 rounded-lg p-8 space-y-6">
-        {/* Username */}
-        <div>
-          <label htmlFor="username" className="block text-sm font-bold mb-2">
-            Nome de Usuário *
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Como você quer ser chamado?"
-            className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
-            required
-          />
+        <div className="relative z-10 w-full max-w-4xl">
+          <Motion defaultStyle={{ opacity: 0, y: -40 }} style={{ opacity: spring(1), y: spring(0) }}>
+            {(style) => (
+              <div className="text-center mb-16" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  Criar Meu Perfil
+                </h1>
+                <p className="text-gray-300 text-xl max-w-2xl mx-auto">
+                  Configure seu personagem e comece sua jornada como agente da V.I.G.I.A.
+                </p>
+              </div>
+            )}
+          </Motion>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 200 }), y: spring(0, { delay: 200 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <label htmlFor="username" className="block text-sm font-bold mb-3 text-orange-400">
+                    Nome de Usuário *
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Como você quer ser chamado?"
+                    className="w-full bg-slate-700/50 border border-orange-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition"
+                    required
+                  />
+                </div>
+              )}
+            </Motion>
+
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 300 }), y: spring(0, { delay: 300 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <label htmlFor="class" className="block text-sm font-bold mb-3 text-orange-400">
+                    Classe *
+                  </label>
+                  <select
+                    id="class"
+                    name="class"
+                    value={formData.class}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-orange-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition"
+                  >
+                    {CLASSES.map((cls) => (
+                      <option key={cls} value={cls}>
+                        {cls}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.class && (
+                    <p className="text-gray-300 text-sm mt-4 p-4 bg-slate-700/30 rounded-lg border border-orange-500/20">
+                      <span className="text-2xl mr-2">{CLASS_DESCRIPTIONS[formData.class].emoji}</span>
+                      {CLASS_DESCRIPTIONS[formData.class].description}
+                    </p>
+                  )}
+                </div>
+              )}
+            </Motion>
+
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 400 }), y: spring(0, { delay: 400 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <label htmlFor="imageUrl" className="block text-sm font-bold mb-3 text-orange-400">
+                    URL do Avatar (Opcional)
+                  </label>
+                  <input
+                    type="url"
+                    id="imageUrl"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                    placeholder="https://exemplo.com/avatar.png"
+                    className="w-full bg-slate-700/50 border border-orange-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition"
+                  />
+                  {formData.imageUrl && (
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-400 mb-3">Preview do avatar:</p>
+                      <img
+                        src={formData.imageUrl}
+                        alt="Avatar preview"
+                        className="max-w-xs max-h-64 rounded-lg border border-orange-500/30 object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </Motion>
+
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 500 }), y: spring(0, { delay: 500 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <label htmlFor="description" className="block text-sm font-bold mb-3 text-orange-400">
+                    Descrição (Opcional)
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Conte um pouco sobre seu personagem..."
+                    rows={5}
+                    className="w-full bg-slate-700/50 border border-orange-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition resize-none"
+                  />
+                </div>
+              )}
+            </Motion>
+
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 600 }), y: spring(0, { delay: 600 }) }}>
+              {(style) => (
+                <div className="flex gap-4" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/dashboard')}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-lg font-bold transition border border-slate-600"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-700 disabled:to-orange-800 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105 shadow-lg"
+                  >
+                    {submitting ? 'Criando...' : 'Criar Perfil'}
+                  </button>
+                </div>
+              )}
+            </Motion>
+          </form>
         </div>
+      </section>
 
-        {/* Class */}
-        <div>
-          <label htmlFor="class" className="block text-sm font-bold mb-2">
-            Classe *
-          </label>
-          <select
-            id="class"
-            name="class"
-            value={formData.class}
-            onChange={handleChange}
-            className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-orange-500"
-          >
-            {CLASSES.map((cls) => (
-              <option key={cls} value={cls}>
-                {cls}
-              </option>
+      {/* Classes Overview Section */}
+      <section className="w-full py-24 px-6 bg-slate-800 flex justify-center">
+        <div className="w-full max-w-6xl">
+          <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
+            {(style) => (
+              <div className="text-center mb-16" style={{ opacity: style.opacity }}>
+                <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  Escolha Sua Classe
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+              </div>
+            )}
+          </Motion>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            {CLASSES.map((cls, index) => (
+              <Motion
+                key={cls}
+                defaultStyle={{ opacity: 0, y: 20 }}
+                style={{ opacity: spring(1, { delay: 500 + index * 100 }), y: spring(0, { delay: 500 + index * 100 }) }}
+              >
+                {(style) => (
+                  <div
+                    className={`bg-gradient-to-br from-slate-700 to-slate-800 border rounded-xl p-6 transition transform hover:scale-105 cursor-pointer ${
+                      formData.class === cls ? 'border-orange-500 shadow-lg shadow-orange-500/50' : 'border-orange-500/30 hover:border-orange-500'
+                    }`}
+                    onClick={() => setFormData((prev) => ({ ...prev, class: cls }))}
+                    style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                  >
+                    <div className="text-4xl mb-3">{CLASS_DESCRIPTIONS[cls].emoji}</div>
+                    <h3 className="font-black text-lg text-orange-400 mb-2">{cls}</h3>
+                    <p className="text-gray-400 text-sm">{CLASS_DESCRIPTIONS[cls].description}</p>
+                  </div>
+                )}
+              </Motion>
             ))}
-          </select>
-          <p className="text-gray-400 text-sm mt-2">
-            {formData.class === 'Guerreiro' && 'Especialista em combate corpo a corpo, com muita força e resistência.'}
-            {formData.class === 'Mago' && 'Manipulador de magia com inteligência elevada e controle de mana.'}
-            {formData.class === 'Arqueiro' && 'Atirador de precisão com destreza excepcional.'}
-            {formData.class === 'Clérigo' && 'Curador e guerreiro espiritual com sabedoria e mana.'}
-            {formData.class === 'Ladrão' && 'Combatente rápido e silencioso com muita destreza.'}
-          </p>
-        </div>
-
-        {/* Image URL */}
-        <div>
-          <label htmlFor="imageUrl" className="block text-sm font-bold mb-2">
-            URL do Avatar (Opcional)
-          </label>
-          <input
-            type="url"
-            id="imageUrl"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            placeholder="https://exemplo.com/avatar.png"
-            className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
-          />
-          {formData.imageUrl && (
-            <div className="mt-4">
-              <p className="text-sm text-gray-400 mb-2">Preview do avatar:</p>
-              <img
-                src={formData.imageUrl}
-                alt="Avatar preview"
-                className="max-w-xs max-h-64 rounded border border-gray-600"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-bold mb-2">
-            Descrição (Opcional)
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Conte um pouco sobre seu personagem..."
-            rows={4}
-            className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
-          />
-        </div>
-
-        {/* Buttons */}
-        <div className="flex gap-4 pt-6 border-t border-gray-700">
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard')}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded font-bold transition"
-          >
-            Voltar
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-800 px-6 py-2 rounded font-bold transition"
-          >
-            {submitting ? 'Criando...' : 'Criar Perfil'}
-          </button>
-        </div>
-      </form>
-
-      {/* Class Descriptions */}
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-        <h3 className="text-lg font-bold mb-4">Sobre as Classes</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
-          <div>
-            <strong className="text-orange-500">Guerreiro</strong>
-            <p className="text-gray-400">Força bruta e resistência</p>
-          </div>
-          <div>
-            <strong className="text-blue-500">Mago</strong>
-            <p className="text-gray-400">Poder mágico e controle</p>
-          </div>
-          <div>
-            <strong className="text-green-500">Arqueiro</strong>
-            <p className="text-gray-400">Velocidade e precisão</p>
-          </div>
-          <div>
-            <strong className="text-purple-500">Clérigo</strong>
-            <p className="text-gray-400">Cura e proteção divina</p>
-          </div>
-          <div>
-            <strong className="text-red-500">Ladrão</strong>
-            <p className="text-gray-400">Rapidez e astúcia</p>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

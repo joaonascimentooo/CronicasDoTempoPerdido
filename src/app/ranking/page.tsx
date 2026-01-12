@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { getGlobalRanking, getClassRanking, getTopProfiles } from '@/lib/profileService';
 import { RankingEntry, UserProfile } from '@/lib/types';
 
-const CLASSES = ['Guerreiro', 'Mago', 'Arqueiro', 'Clérigo', 'Ladrão'];
+const CLASSES = ['Ocultista', 'Especialista', 'Combatente'];
 
 export default function Ranking() {
   const [rankingType, setRankingType] = useState<'kills' | 'level' | 'class'>('kills');
-  const [selectedClass, setSelectedClass] = useState('Guerreiro');
+  const [selectedClass, setSelectedClass] = useState('Ocultista');
   const [ranking, setRanking] = useState<(RankingEntry | UserProfile)[]>([]);
   const [loading, setLoading] = useState(true);
 
