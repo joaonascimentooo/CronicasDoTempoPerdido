@@ -19,7 +19,7 @@ export default function Login() {
 
     try {
       await loginUser(email, password);
-      router.push('/dashboard');
+      router.push('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer login');
     } finally {

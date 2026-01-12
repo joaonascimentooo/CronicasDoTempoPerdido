@@ -259,7 +259,7 @@ export default function SetupProfile() {
                 <div className="flex gap-4" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
                   <button
                     type="button"
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/profile')}
                     className="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-lg font-bold transition border border-slate-600"
                   >
                     Voltar

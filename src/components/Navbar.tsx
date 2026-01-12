@@ -40,9 +40,6 @@ export default function Navbar() {
               <span className="text-gray-400">...</span>
             ) : user ? (
               <>
-                <Link href="/dashboard" className="text-gray-300 hover:text-white">
-                  Dashboard
-                </Link>
                 <Link href="/ranking" className="text-gray-300 hover:text-white">
                   Ranking
                 </Link>

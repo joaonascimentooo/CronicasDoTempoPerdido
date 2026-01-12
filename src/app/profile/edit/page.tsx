@@ -102,7 +102,7 @@ export default function EditProfile() {
 
     try {
       await deleteUserProfile(user.uid);
-      router.push('/dashboard');
+      router.push('/profile');
     } catch (error) {
       console.error('Erro ao deletar perfil:', error);
       alert('Erro ao deletar perfil. Tente novamente.');
