@@ -56,7 +56,7 @@ export default function Ranking() {
               <th className="px-4 py-3 text-center">Criaturas Mortas</th>
               {rankingType === 'kills' && (
                 <>
-                  <th className="px-4 py-3 text-center">Mortes</th>
+                  <th className="px-4 py-3 text-center">Seres Mortos</th>
                   <th className="px-4 py-3 text-center">Ouro</th>
                 </>
               )}

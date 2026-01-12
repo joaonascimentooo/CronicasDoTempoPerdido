@@ -62,7 +62,7 @@ export default function Dashboard() {
               <div className="text-3xl font-bold text-orange-500">{profile.creatureKills}</div>
             </div>
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <div className="text-gray-400 text-sm mb-1">Mortes</div>
+              <div className="text-gray-400 text-sm mb-1">Seres Mortos</div>
               <div className="text-3xl font-bold text-red-500">{profile.deaths}</div>
             </div>
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">

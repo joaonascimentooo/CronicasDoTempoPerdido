@@ -182,7 +182,7 @@ export default function ProfilePage() {
             {[
               { label: 'Nível', value: profile.level, color: 'text-orange-400' },
               { label: 'Criaturas Mortas', value: profile.creatureKills, color: 'text-orange-400' },
-              { label: 'Mortes', value: profile.deaths, color: 'text-red-500' },
+              { label: 'Seres Mortos', value: profile.deaths, color: 'text-red-500' },
               { label: 'Ouro', value: profile.gold, color: 'text-yellow-500' },
             ].map((stat, index) => (
               <Motion
