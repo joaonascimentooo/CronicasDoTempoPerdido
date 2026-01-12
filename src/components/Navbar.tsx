@@ -43,11 +43,11 @@ export default function Navbar() {
                 <Link href="/dashboard" className="text-gray-300 hover:text-white">
                   Dashboard
                 </Link>
-                <Link href="/profile" className="text-gray-300 hover:text-white">
-                  Meu Perfil
-                </Link>
                 <Link href="/ranking" className="text-gray-300 hover:text-white">
                   Ranking
+                </Link>
+                <Link href="/profile" className="text-gray-300 hover:text-white">
+                  Meu Perfil
                 </Link>
                 <div className="text-sm text-gray-400">
                   {user.email}
