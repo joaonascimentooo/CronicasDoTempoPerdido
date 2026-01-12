@@ -1,0 +1,71 @@
+// Tipos para o sistema de personagens
+
+export interface Character {
+  id?: string;
+  name: string;
+  class: string; // Guerreiro, Mago, Arqueiro, etc
+  level: number;
+  experience: number;
+  health: number;
+  maxHealth: number;
+  mana?: number;
+  maxMana?: number;
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+  creatureKills: number; // Número de criaturas mortas
+  playerKills?: number; // PvP kills
+  deaths: number;
+  gold: number;
+  inventory: Item[];
+  skills: Skill[];
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  faction?: string; // Facção/Grupo do jogador
+  description?: string;
+  imageUrl?: string;
+}
+
+export interface Item {
+  id: string;
+  name: string;
+  type: 'weapon' | 'armor' | 'consumable' | 'quest' | 'other';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  description: string;
+  quantity: number;
+  damage?: number; // Para armas
+  defense?: number; // Para armaduras
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  level: number;
+  experience: number;
+  description: string;
+}
+
+export interface Creature {
+  id: string;
+  name: string;
+  type: string;
+  level: number;
+  experience: number;
+  loot: Item[];
+}
+
+export interface RankingEntry {
+  userId: string;
+  characterName: string;
+  characterClass: string;
+  creatureKills: number;
+  playerKills: number;
+  deaths: number;
+  level: number;
+  gold: number;
+  rank: number;
+}
