@@ -70,7 +70,7 @@ export async function getUserTeam(userId: string): Promise<Team | null> {
       const team = doc.data() as Team;
       const isMember = team.members.some((m) => m.userId === userId);
       if (isMember) {
-        return { id: doc.id, ...team } as Team;
+        return { ...team, id: doc.id } as Team;
       }
     }
     
