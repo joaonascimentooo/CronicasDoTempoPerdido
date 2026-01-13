@@ -27,6 +27,8 @@ export interface UserProfile {
   description?: string;
   imageUrl?: string; // URL do avatar/boneco do jogador
   isMaster?: boolean; // Flag indicando se é conta mestre
+  isDeceased?: boolean; // Flag indicando se o personagem está morto
+  causeOfDeath?: string; // Causa da morte do personagem
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +62,7 @@ export interface Creature {
 }
 
 export interface RankingEntry {
+  profileId: string; // ID do documento do perfil
   userId: string;
   username: string;
   userClass: string;

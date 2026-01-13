@@ -214,15 +214,31 @@ export default function MasterPage() {
                             <h2 className="text-3xl font-bold text-orange-400 mb-2">{selectedCharacter.username}</h2>
                             <p className="text-gray-400">{selectedCharacter.class}</p>
                           </div>
-                          <button
-                            onClick={() => handleDeleteCharacter(selectedCharacter.id)}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-                          >
-                            Deletar
-                          </button>
+                          <div className="flex flex-col items-end gap-2">
+                            <button
+                              onClick={() => handleDeleteCharacter(selectedCharacter.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+                            >
+                              Deletar
+                            </button>
+                            <div className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                              selectedCharacter.isDeceased
+                                ? 'bg-red-900/50 text-red-400 border border-red-600/50'
+                                : 'bg-green-900/50 text-green-400 border border-green-600/50'
+                            }`}>
+                              {selectedCharacter.isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                      {selectedCharacter.isDeceased && selectedCharacter.causeOfDeath && (
+                        <div className="bg-red-900/20 border border-red-600/50 rounded-lg p-4 mb-6">
+                          <p className="text-red-400 font-bold mb-2">Causa da Morte:</p>
+                          <p className="text-gray-200">{selectedCharacter.causeOfDeath}</p>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-4 mb-6">
                           <div className="bg-slate-600/50 p-4 rounded-lg">
                             <p className="text-gray-400 text-sm mb-1">Nível</p>
                             <p className="text-3xl font-bold text-orange-400">{selectedCharacter.level}</p>
@@ -325,6 +341,44 @@ export default function MasterPage() {
                   className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
                 />
               </div>
+
+              <div className="border-t border-slate-600 pt-4">
+                <label className="block text-gray-400 text-sm mb-3">Status do Personagem</label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setEditData({ ...editData, isDeceased: false, causeOfDeath: '' })}
+                    className={`flex-1 py-2 px-4 rounded-lg transition font-bold ${
+                      !editData.isDeceased
+                        ? 'bg-green-600 text-white'
+                        : 'bg-slate-600 text-gray-300 hover:bg-slate-500'
+                    }`}
+                  >
+                    ❤️ Vivo
+                  </button>
+                  <button
+                    onClick={() => setEditData({ ...editData, isDeceased: true })}
+                    className={`flex-1 py-2 px-4 rounded-lg transition font-bold ${
+                      editData.isDeceased
+                        ? 'bg-red-600 text-white'
+                        : 'bg-slate-600 text-gray-300 hover:bg-slate-500'
+                    }`}
+                  >
+                    💀 Morto
+                  </button>
+                </div>
+              </div>
+
+              {editData.isDeceased && (
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">Causa da Morte</label>
+                  <textarea
+                    value={editData.causeOfDeath ?? selectedCharacter.causeOfDeath ?? ''}
+                    onChange={(e) => setEditData({ ...editData, causeOfDeath: e.target.value })}
+                    placeholder="Descreva a causa da morte do personagem..."
+                    className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg resize-none h-24"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4">

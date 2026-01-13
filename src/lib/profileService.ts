@@ -132,6 +132,7 @@ export async function getGlobalRanking(limitResults: number = 100): Promise<Rank
     querySnapshot.forEach((doc) => {
       const data = doc.data() as UserProfile;
       ranking.push({
+        profileId: doc.id,
         userId: data.id,
         username: data.username,
         userClass: data.class,
@@ -165,6 +166,7 @@ export async function getClassRanking(userClass: string, limitResults: number = 
       const data = doc.data() as UserProfile;
       if (data.class === userClass) {
         ranking.push({
+          profileId: doc.id,
           userId: data.id,
           username: data.username,
           userClass: data.class,
@@ -200,6 +202,39 @@ export async function getTopProfiles(limitResults: number = 10) {
     return profiles;
   } catch (error) {
     console.error('Erro ao buscar top perfis:', error);
+    throw error;
+  }
+}
+
+// Obter ranking por Seres Mortos (deaths)
+export async function getDeathsRanking(limitResults: number = 100): Promise<RankingEntry[]> {
+  try {
+    const q = query(
+      collection(db, 'profiles'),
+      orderBy('deaths', 'desc'),
+      limit(limitResults)
+    );
+    const querySnapshot = await getDocs(q);
+    const ranking: RankingEntry[] = [];
+    let rank = 1;
+    querySnapshot.forEach((doc) => {
+      const data = doc.data() as UserProfile;
+      ranking.push({
+        profileId: doc.id,
+        userId: data.id,
+        username: data.username,
+        userClass: data.class,
+        creatureKills: data.creatureKills,
+        playerKills: data.playerKills || 0,
+        deaths: data.deaths,
+        level: data.level,
+        gold: data.gold,
+        rank: rank++,
+      });
+    });
+    return ranking;
+  } catch (error) {
+    console.error('Erro ao buscar ranking por deaths:', error);
     throw error;
   }
 }

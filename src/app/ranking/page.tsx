@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getGlobalRanking, getClassRanking, getTopProfiles } from '@/lib/profileService';
+import { useRouter } from 'next/navigation';
+import { getGlobalRanking, getClassRanking, getTopProfiles, getDeathsRanking } from '@/lib/profileService';
 import { RankingEntry, UserProfile } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 
 const CLASSES = ['Ocultista', 'Especialista', 'Combatente'];
 
 export default function Ranking() {
-  const [rankingType, setRankingType] = useState<'kills' | 'level' | 'class'>('kills');
+  const router = useRouter();
+  const [rankingType, setRankingType] = useState<'kills' | 'deaths' | 'level' | 'class'>('kills');
   const [selectedClass, setSelectedClass] = useState('Ocultista');
   const [ranking, setRanking] = useState<(RankingEntry | UserProfile)[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,8 @@ export default function Ranking() {
         let data;
         if (rankingType === 'kills') {
           data = await getGlobalRanking(50);
+        } else if (rankingType === 'deaths') {
+          data = await getDeathsRanking(50);
         } else if (rankingType === 'level') {
           data = await getTopProfiles(50);
         } else {
@@ -58,7 +62,11 @@ export default function Ranking() {
               {rankingType === 'kills' && (
                 <>
                   <th className="px-6 py-4 text-center font-bold text-orange-400">Seres Mortos</th>
-                  <th className="px-6 py-4 text-center font-bold text-orange-400">Ouro</th>
+                </>
+              )}
+              {rankingType === 'deaths' && (
+                <>
+                  <th className="px-6 py-4 text-center font-bold text-orange-400">Seres Mortos</th>
                 </>
               )}
             </tr>
@@ -74,7 +82,14 @@ export default function Ranking() {
                   <td className="px-6 py-4 font-bold text-orange-400 text-lg">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4 font-bold text-white">{isRankingEntry ? entry.username : entry.username}</td>
+                  <td className="px-6 py-4 font-bold">
+                    <button
+                      onClick={() => router.push(`/profile/view/${isRankingEntry ? entry.profileId : entry.id}`)}
+                      className="text-white hover:text-orange-400 transition cursor-pointer"
+                    >
+                      {isRankingEntry ? entry.username : entry.username}
+                    </button>
+                  </td>
                   <td className="px-6 py-4 text-gray-300">
                     {isRankingEntry ? entry.userClass : entry.class}
                   </td>
@@ -87,7 +102,11 @@ export default function Ranking() {
                   {rankingType === 'kills' && isRankingEntry && (
                     <>
                       <td className="px-6 py-4 text-center text-red-400 font-bold">{entry.deaths}</td>
-                      <td className="px-6 py-4 text-center text-yellow-400 font-bold">{entry.gold}</td>
+                    </>
+                  )}
+                  {rankingType === 'deaths' && isRankingEntry && (
+                    <>
+                      <td className="px-6 py-4 text-center text-red-400 font-bold">{entry.deaths}</td>
                     </>
                   )}
                 </tr>
@@ -109,7 +128,7 @@ export default function Ranking() {
               <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
                 Ranking Global
               </h1>
-              <p className="text-gray-400 text-lg">Veja como você se compara com outros jogadores</p>
+              <p className="text-gray-400 text-lg">Veja como você se compara com outros agentes</p>
               <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto mt-6"></div>
             </div>
           )}
@@ -128,6 +147,16 @@ export default function Ranking() {
                 }`}
               >
                 Por Criaturas Mortas
+              </button>
+              <button
+                onClick={() => setRankingType('deaths')}
+                className={`px-6 py-3 rounded-lg font-bold transition ${
+                  rankingType === 'deaths'
+                    ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                }`}
+              >
+                Por Seres Mortos
               </button>
               <button
                 onClick={() => setRankingType('level')}
