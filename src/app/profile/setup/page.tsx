@@ -81,6 +81,7 @@ export default function SetupProfile() {
 
     try {
       const profileData: Omit<UserProfile, 'id' | 'createdAt' | 'updatedAt'> = {
+        userId: user.uid,
         email: user.email || '',
         username: formData.username.trim(),
         class: formData.class,
