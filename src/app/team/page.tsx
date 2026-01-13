@@ -6,7 +6,7 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, getProfileById } from '@/lib/profileService';
 import { getUserTeam, getAllTeams, createTeam, joinTeam, leaveTeam, deleteTeam } from '@/lib/teamService';
-import { UserProfile, Team, TeamMember } from '@/lib/types';
+import { UserProfile, Team } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 
 export default function TeamPage() {
@@ -18,7 +18,7 @@ export default function TeamPage() {
   const [memberProfiles, setMemberProfiles] = useState<Map<string, UserProfile>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [teamName, setTeamName] = useState('');
   const [teamDescription, setTeamDescription] = useState('');
   const [teamMaxMembers, setTeamMaxMembers] = useState('5');
@@ -380,7 +380,7 @@ export default function TeamPage() {
                     className="flex-1 bg-slate-600/50 hover:bg-slate-600/70 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-500/50 transition placeholder-gray-500"
                   />
                   <div className="text-gray-400 text-sm bg-slate-600/30 px-3 py-2 rounded-lg border border-slate-500/30">
-                    {teamMaxMembers > 20 ? '20' : teamMaxMembers < 2 ? '2' : teamMaxMembers}
+                    {parseInt(teamMaxMembers) > 20 ? '20' : parseInt(teamMaxMembers) < 2 ? '2' : teamMaxMembers}
                   </div>
                 </div>
               </div>

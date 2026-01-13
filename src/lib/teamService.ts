@@ -3,8 +3,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  query,
-  where,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -102,7 +100,7 @@ export async function joinTeam(
   teamId: string,
   userId: string,
   username: string
-): Promise<void> {
+): Promise<{ alreadyMember: boolean; teamId?: string } | void> {
   try {
     const teamRef = doc(db, 'teams', teamId);
     const teamSnap = await getDoc(teamRef);
@@ -137,6 +135,8 @@ export async function joinTeam(
       members: updatedMembers,
       updatedAt: new Date(),
     });
+
+    return { alreadyMember: false, teamId };
   } catch (error) {
     console.error('Erro ao entrar na equipe:', error);
     throw error;
