@@ -234,10 +234,13 @@ export default function TeamPage() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 100 }), y: spring(0, { delay: 100 }) }}>
             {(style) => (
               <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mb-16">
-                <div className="bg-gradient-to-br from-green-900/30 to-green-800/30 border border-green-500/50 rounded-xl p-8">
-                  <h2 className="text-3xl font-bold text-green-400 mb-4">✓ Sua Equipe</h2>
-                  <div className="bg-slate-800/50 rounded-lg p-6 mb-6">
-                    <h3 className="text-2xl font-bold text-white mb-2">{myTeam.name}</h3>
+                <div className="bg-gradient-to-br from-orange-900/25 via-slate-800/40 to-slate-900/50 border border-orange-500/60 rounded-2xl p-8 shadow-2xl shadow-orange-500/20">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-10 bg-gradient-to-b from-orange-500 to-orange-600/50 rounded-full"></div>
+                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-300">✓ Sua Equipe</h2>
+                  </div>
+                  <div className="bg-gradient-to-br from-slate-700/60 to-slate-800/40 rounded-xl p-6 mb-6 border border-slate-600/40">
+                    <h3 className="text-3xl font-bold text-white mb-3">{myTeam.name}</h3>
                     {myTeam.description && (
                       <p className="text-gray-400 mb-4">{myTeam.description}</p>
                     )}
@@ -264,49 +267,76 @@ export default function TeamPage() {
 
                   {/* Members List */}
                   <div className="mb-6">
-                    <h4 className="text-lg font-bold text-gray-300 mb-3">Membros:</h4>
-                    <div className="space-y-2">
+                    <h4 className="text-lg font-bold text-gray-300 mb-4 flex items-center gap-2">
+                      <span className="text-orange-400">👥</span> Membros ({myTeam.members.length}/{myTeam.maxMembers})
+                    </h4>
+                    <div className="space-y-3">
                       {myTeam.members.map((member) => {
                         const memberProfile = memberProfiles.get(member.userId);
                         const isDeceased = memberProfile?.isDeceased || false;
+                        const isLeader = member.role === 'leader';
                         
                         return (
-                          <button
+                          <div
                             key={member.userId}
-                            onClick={() => router.push(`/profile/view/${member.userId}`)}
-                            className={`w-full text-left rounded-lg p-3 flex justify-between items-center transition border ${
-                              isDeceased
-                                ? 'bg-red-900/30 border-red-700/50 hover:bg-red-900/50'
-                                : 'bg-green-900/30 border-green-700/50 hover:bg-green-900/50'
+                            className={`group rounded-xl p-4 border backdrop-blur-sm transition-all duration-300 cursor-pointer ${
+                              isLeader
+                                ? 'bg-gradient-to-r from-amber-900/50 to-amber-800/30 border-amber-500/70 hover:border-amber-400 hover:from-amber-900/70 hover:to-amber-800/50 hover:shadow-lg hover:shadow-amber-500/30'
+                                : isDeceased
+                                ? 'bg-gradient-to-r from-red-900/50 to-red-800/30 border-red-500/70 hover:border-red-400 hover:from-red-900/70 hover:to-red-800/50 hover:shadow-lg hover:shadow-red-500/30'
+                                : 'bg-gradient-to-r from-indigo-900/50 to-indigo-800/30 border-indigo-500/70 hover:border-indigo-400 hover:from-indigo-900/70 hover:to-indigo-800/50 hover:shadow-lg hover:shadow-indigo-500/30'
                             }`}
+                            onClick={() => router.push(`/profile/view/${member.userId}`)}
                           >
-                            <div>
-                              <p className="text-white font-bold hover:text-orange-400 transition">{member.username}</p>
-                              <p className="text-gray-400 text-sm">
-                                {member.role === 'leader' ? '👑 Líder' : 'Membro'}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className={`px-3 py-1 rounded-lg font-bold text-sm ${
-                                isDeceased
-                                  ? 'bg-red-900/50 text-red-400 border border-red-600/50'
-                                  : 'bg-green-900/50 text-green-400 border border-green-600/50'
-                              }`}>
-                                {isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                            <div className="flex justify-between items-start gap-4">
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="text-white font-bold text-lg group-hover:text-orange-400 transition truncate">
+                                    {member.username}
+                                  </p>
+                                  {isLeader && (
+                                    <span className="bg-amber-600/60 text-amber-100 px-2 py-0.5 rounded-full text-xs font-bold whitespace-nowrap">
+                                      👑 Líder
+                                    </span>
+                                  )}
+                                </div>
+                                {memberProfile && (
+                                  <p className="text-gray-400 text-sm">
+                                    Lvl. {memberProfile.level} • {memberProfile.class}
+                                  </p>
+                                )}
                               </div>
-                              {myTeam.leaderId === user?.uid && member.userId !== user?.uid && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveMember(member.userId);
-                                  }}
-                                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs font-bold transition"
-                                >
-                                  Expulsar
-                                </button>
-                              )}
+
+                              {/* Status & Actions */}
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {/* Status Badge */}
+                                <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-bold text-xs whitespace-nowrap ${
+                                  isDeceased
+                                    ? 'bg-red-900/60 text-red-100 border border-red-500/70 shadow-lg shadow-red-500/20'
+                                    : isLeader
+                                    ? 'bg-amber-900/60 text-amber-100 border border-amber-500/70 shadow-lg shadow-amber-500/20'
+                                    : 'bg-indigo-900/60 text-indigo-100 border border-indigo-500/70 shadow-lg shadow-indigo-500/20'
+                                }`}>
+                                  <span className="text-lg">{isDeceased ? '💀' : '❤️'}</span>
+                                  {isDeceased ? 'Morto' : 'Vivo'}
+                                </div>
+
+                                {/* Expulsar Button */}
+                                {myTeam.leaderId === user?.uid && !isLeader && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveMember(member.userId);
+                                    }}
+                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:shadow-lg hover:shadow-red-600/30 active:scale-95"
+                                  >
+                                    Expulsar
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
