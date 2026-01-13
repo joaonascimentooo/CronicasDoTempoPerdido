@@ -337,9 +337,9 @@ export default function MasterPage() {
               <button
                 onClick={async () => {
                   try {
-                    if (selectedCharacter) {
+                    if (selectedCharacter && user) {
                       await masterUpdateProfile(selectedCharacter.id, editData);
-                      await loadCharacters();
+                      await loadCharacters(user.uid);
                       setShowEditModal(false);
                     }
                   } catch (error) {
