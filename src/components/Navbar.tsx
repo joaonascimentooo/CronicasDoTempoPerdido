@@ -36,7 +36,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-lg sm:text-2xl font-bold text-orange-500 hover:text-orange-400">
-              V.I.G.I.A.
+              VIGIA
             </Link>
           </div>
 

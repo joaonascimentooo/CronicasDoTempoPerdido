@@ -19,7 +19,7 @@ export default function Home() {
             {(style) => (
               <>
                 <h1 className="text-5xl sm:text-7xl md:text-8xl font-black mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                  V.I.G.I.A.
+                  VIGIA
                 </h1>
                 <p className="text-base sm:text-xl md:text-2xl text-orange-300 mb-6 sm:mb-8 font-light">Os Guardiões do Fluxo Temporal</p>
               </>
@@ -63,10 +63,10 @@ export default function Home() {
             {(style) => (
               <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
                 <p className="text-center text-gray-200 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8">
-                  Nós somos o grupo responsável por ser os olhos que a história não possui. Enquanto as equipes de campo mergulham nas rupturas do passado, a V.I.G.I.A. permanece na frequência estática, filtrando o ruído entre o que deveria ser e o que o Paranormal corrompeu.
+                  Nós somos o grupo responsável por ser os olhos que a história não possui. Enquanto as equipes de campo mergulham nas rupturas do passado, a VIGIA permanece na frequência estática, filtrando o ruído entre o que deveria ser e o que o Paranormal corrompeu.
                 </p>
                 <p className="text-center text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
-                  Nossa jurisdição não é o combate, mas a verdade absoluta. Se uma missão falha e ninguém retorna para relatar, para o mundo a história mudou para sempre. Para a V.I.G.I.A., aquele evento se torna um log de sistema — uma cicatriz que precisamos documentar.
+                  Nossa jurisdição não é o combate, mas a verdade absoluta. Se uma missão falha e ninguém retorna para relatar, para o mundo a história mudou para sempre. Para a VIGIA, aquele evento se torna um log de sistema — uma cicatriz que precisamos documentar.
                 </p>
               </div>
             )}
@@ -146,7 +146,7 @@ export default function Home() {
                   Pronto para se juntar?
                 </h3>
                 <p className="text-gray-300 text-sm sm:text-base md:text-xl mb-6 sm:mb-8">
-                  Explore seu potencial como agente da V.I.G.I.A. e assuma seu lugar na história.
+                  Explore seu potencial como agente da VIGIA e assuma seu lugar na história.
                 </p>
                 <Link
                   href="/profile"

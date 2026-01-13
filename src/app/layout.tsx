@@ -4,8 +4,11 @@ import Navbar from '@/components/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Crônicas do Tempo - RPG',
-  description: 'Sistema de gerenciamento de personagens RPG',
+  title: 'VIGIA',
+  description: 'Sistema de gerenciamento de personagens',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

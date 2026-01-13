@@ -145,7 +145,7 @@ export default function SetupProfile() {
                   Criar Meu Perfil
                 </h1>
                 <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-                  Configure seu personagem e comece sua jornada como agente da V.I.G.I.A.
+                  Configure seu personagem e comece sua jornada como agente da VIGIA.
                 </p>
               </div>
             )}

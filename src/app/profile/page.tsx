@@ -96,7 +96,7 @@ export default function ProfilePage() {
                   Perfil Vazio
                 </h2>
                 <p className="text-gray-300 text-lg mb-8" style={{ opacity: style.opacity }}>
-                  Você ainda não criou seu perfil. Configure seu personagem para começar sua jornada como agente da V.I.G.I.A.
+                  Você ainda não criou seu perfil. Configure seu personagem para começar sua jornada como agente da VIGIA.
                 </p>
                 <button
                   onClick={() => router.push('/profile/setup')}
