@@ -121,16 +121,20 @@ export default function TeamPage() {
       console.error('Erro ao entrar na equipe:', errorMsg);
       
       // Tratamento específico de erros
-      if (error.code === 'permission-denied') {
-        alert('Erro de permissão. Contate o administrador.');
-      } else if (error.message?.includes('Equipe não encontrada')) {
-        alert('Equipe não encontrada');
-      } else if (error.message?.includes('limite de membros')) {
-        alert('Esta equipe atingiu o limite de membros');
-      } else if (error.message?.includes('já é membro')) {
-        alert('Você já é membro desta equipe');
+      if (error instanceof Error) {
+        if (errorMsg.includes('permission-denied')) {
+          alert('Erro de permissão. Contate o administrador.');
+        } else if (errorMsg.includes('Equipe não encontrada')) {
+          alert('Equipe não encontrada');
+        } else if (errorMsg.includes('limite de membros')) {
+          alert('Esta equipe atingiu o limite de membros');
+        } else if (errorMsg.includes('já é membro')) {
+          alert('Você já é membro desta equipe');
+        } else {
+          alert('Erro ao entrar na equipe: ' + errorMsg);
+        }
       } else {
-        alert('Erro ao entrar na equipe: ' + error.message);
+        alert('Erro ao entrar na equipe');
       }
     }
   };
