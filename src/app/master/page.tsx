@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getMasterCharacters, isMasterEmail, masterDeleteProfile, masterUpdateProfile, getAllProfiles } from '@/lib/profileService';
-import { UserProfile } from '@/lib/types';
+import { getAllTeams, joinTeam, leaveTeam } from '@/lib/teamService';
+import { UserProfile, Team } from '@/lib/types';
 import Link from 'next/link';
 import { Motion, spring } from 'react-motion';
 
@@ -15,8 +16,10 @@ export default function MasterPage() {
   const [allCharacters, setAllCharacters] = useState<UserProfile[]>([]);
   const [filteredCharacters, setFilteredCharacters] = useState<UserProfile[]>([]);
   const [myCharacters, setMyCharacters] = useState<UserProfile[]>([]);
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCharacter, setSelectedCharacter] = useState<UserProfile | null>(null);
+  const [characterTeam, setCharacterTeam] = useState<Team | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<Partial<UserProfile>>({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,10 +54,20 @@ export default function MasterPage() {
       const masterChars = await getMasterCharacters(userId);
       setMyCharacters(masterChars);
 
+      // Buscar todas as equipes
+      try {
+        const teams = await getAllTeams();
+        setAllTeams(teams);
+        console.log('Equipes carregadas:', teams);
+      } catch (teamError) {
+        console.error('Erro ao carregar equipes:', teamError);
+        setAllTeams([]);
+      }
+
       // Filtro inicial mostra tudo
       setFilteredCharacters(allChars);
     } catch (error) {
-      console.error('Erro ao carregar personagens:', error);
+      console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
@@ -77,6 +90,14 @@ export default function MasterPage() {
     setFilteredCharacters(filtered);
   }, [searchQuery, filterType, allCharacters, myCharacters]);
 
+  // Buscar equipe do personagem quando selecionado
+  useEffect(() => {
+    if (selectedCharacter) {
+      const team = allTeams.find(t => t.members.some(m => m.userId === selectedCharacter.id));
+      setCharacterTeam(team || null);
+    }
+  }, [selectedCharacter, allTeams]);
+
   const handleDeleteCharacter = async (characterId: string) => {
     if (confirm('Tem certeza que deseja deletar este personagem?')) {
       try {
@@ -88,6 +109,42 @@ export default function MasterPage() {
         console.error('Erro ao deletar personagem:', error);
         alert('Erro ao deletar personagem');
       }
+    }
+  };
+
+  const handleChangeTeam = async (newTeamId: string) => {
+    if (!selectedCharacter) return;
+
+    try {
+      // Se há uma equipe anterior, remover do personagem
+      if (characterTeam) {
+        await leaveTeam(characterTeam.id, selectedCharacter.id);
+      }
+
+      // Se selecionou uma nova equipe, adicionar
+      if (newTeamId) {
+        await joinTeam(newTeamId, selectedCharacter.id, selectedCharacter.username);
+      }
+
+      // Recarregar dados
+      if (user) {
+        await loadCharacters(user.uid);
+      }
+    } catch (error: any) {
+      console.error('Erro ao mudar equipe:', error);
+      alert('Erro ao mudar equipe: ' + error.message);
+    }
+  };
+
+  const handleReloadTeams = async () => {
+    try {
+      const teams = await getAllTeams();
+      setAllTeams(teams);
+      console.log('Equipes recarregadas:', teams);
+      alert('Equipes recarregadas com sucesso!');
+    } catch (error) {
+      console.error('Erro ao recarregar equipes:', error);
+      alert('Erro ao recarregar equipes');
     }
   };
 
@@ -174,15 +231,22 @@ export default function MasterPage() {
                             <button
                               key={char.id}
                               onClick={() => setSelectedCharacter(char)}
-                              className={`w-full text-left p-4 rounded-lg transition ${
+                              className={`w-full text-left p-4 rounded-lg transition border ${
                                 selectedCharacter?.id === char.id
-                                  ? 'bg-orange-500/20 border border-orange-500'
-                                  : 'bg-slate-600/50 border border-slate-600 hover:border-orange-500/50'
+                                  ? char.isDeceased
+                                    ? 'bg-red-600/40 border-red-500'
+                                    : 'bg-green-600/40 border-green-500'
+                                  : char.isDeceased
+                                  ? 'bg-red-900/30 border-red-700/50 hover:bg-red-900/50'
+                                  : 'bg-green-900/30 border-green-700/50 hover:bg-green-900/50'
                               }`}
                             >
                               <div className="font-bold text-white">{char.username}</div>
                               <div className="text-xs text-gray-500 mb-1">{char.email}</div>
                               <div className="text-sm text-gray-400">{char.class} • Nível {char.level}</div>
+                              <div className={`text-xs font-bold mt-2 ${char.isDeceased ? 'text-red-400' : 'text-green-400'}`}>
+                                {char.isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                              </div>
                             </button>
                           ))
                         ) : (
@@ -229,6 +293,45 @@ export default function MasterPage() {
                               {selectedCharacter.isDeceased ? '💀 Morto' : '❤️ Vivo'}
                             </div>
                           </div>
+                        </div>
+
+                        {/* Seletor de Equipe */}
+                        <div className="bg-slate-600/50 rounded-lg p-4 mb-6">
+                          <div className="flex justify-between items-center mb-3">
+                            <label className="block text-gray-300 text-sm font-semibold">Equipe</label>
+                            <button
+                              onClick={handleReloadTeams}
+                              className="text-orange-400 hover:text-orange-300 text-xs font-semibold"
+                            >
+                              🔄 Recarregar
+                            </button>
+                          </div>
+                          
+                          {allTeams.length === 0 ? (
+                            <div className="bg-slate-700 border border-orange-500/20 rounded-lg p-3 text-gray-400 text-sm">
+                              Nenhuma equipe disponível. Clique em "Recarregar" para tentar novamente.
+                            </div>
+                          ) : (
+                            <select
+                              value={characterTeam?.id || ''}
+                              onChange={(e) => handleChangeTeam(e.target.value)}
+                              className="w-full bg-slate-700 border border-orange-500/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            >
+                              <option value="">Sem Equipe</option>
+                              {allTeams.map((team) => (
+                                <option key={team.id} value={team.id}>
+                                  {team.name} ({team.members.length}/{team.maxMembers})
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                          
+                          {characterTeam && (
+                            <div className="mt-3 text-sm text-gray-300">
+                              <p><span className="font-semibold">Líder:</span> {characterTeam.leaderName}</p>
+                              <p><span className="font-semibold">Membros:</span> {characterTeam.members.length}/{characterTeam.maxMembers}</p>
+                            </div>
+                          )}
                         </div>
 
                       {selectedCharacter.isDeceased && selectedCharacter.causeOfDeath && (
@@ -287,127 +390,143 @@ export default function MasterPage() {
 
       {/* Edit Modal */}
       {showEditModal && selectedCharacter && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-          <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-8 max-w-md w-full max-h-96 overflow-y-auto">
-            <h3 className="text-2xl font-bold text-orange-400 mb-6">Editar Personagem</h3>
-            
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">Nível</label>
-                <input
-                  type="number"
-                  value={editData.level ?? selectedCharacter.level}
-                  onChange={(e) => setEditData({ ...editData, level: parseInt(e.target.value) })}
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
-                />
-              </div>
+        <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
+          {(style) => (
+            <div style={{ opacity: style.opacity }} className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6">
+              <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 rounded-2xl max-w-md w-full max-h-96 overflow-y-auto">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-orange-600/30 to-orange-500/20 border-b border-orange-500/30 px-8 py-6">
+                  <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-300">
+                    Editar {selectedCharacter.username}
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">Atualize os dados do personagem</p>
+                </div>
 
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">Experiência</label>
-                <input
-                  type="number"
-                  value={editData.experience ?? selectedCharacter.experience}
-                  onChange={(e) => setEditData({ ...editData, experience: parseInt(e.target.value) })}
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
-                />
-              </div>
+                <div className="px-8 py-6 space-y-5">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-orange-300 text-xs font-bold mb-2 uppercase tracking-wide">Nível</label>
+                      <input
+                        type="number"
+                        value={editData.level ?? selectedCharacter.level}
+                        onChange={(e) => setEditData({ ...editData, level: parseInt(e.target.value) })}
+                        className="w-full bg-slate-700/50 border border-orange-500/30 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-orange-300 text-xs font-bold mb-2 uppercase tracking-wide">XP</label>
+                      <input
+                        type="number"
+                        value={editData.experience ?? selectedCharacter.experience}
+                        onChange={(e) => setEditData({ ...editData, experience: parseInt(e.target.value) })}
+                        className="w-full bg-slate-700/50 border border-orange-500/30 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">Criaturas Mortas</label>
-                <input
-                  type="number"
-                  value={editData.creatureKills ?? selectedCharacter.creatureKills}
-                  onChange={(e) => setEditData({ ...editData, creatureKills: parseInt(e.target.value) })}
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
-                />
-              </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-green-300 text-xs font-bold mb-2 uppercase tracking-wide">Criaturas</label>
+                      <input
+                        type="number"
+                        value={editData.creatureKills ?? selectedCharacter.creatureKills}
+                        onChange={(e) => setEditData({ ...editData, creatureKills: parseInt(e.target.value) })}
+                        className="w-full bg-slate-700/50 border border-green-500/30 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-red-300 text-xs font-bold mb-2 uppercase tracking-wide">Mortes</label>
+                      <input
+                        type="number"
+                        value={editData.deaths ?? selectedCharacter.deaths}
+                        onChange={(e) => setEditData({ ...editData, deaths: parseInt(e.target.value) })}
+                        className="w-full bg-slate-700/50 border border-red-500/30 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition"
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">Seres Mortos</label>
-                <input
-                  type="number"
-                  value={editData.deaths ?? selectedCharacter.deaths}
-                  onChange={(e) => setEditData({ ...editData, deaths: parseInt(e.target.value) })}
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
-                />
-              </div>
+                  <div>
+                    <label className="block text-yellow-300 text-xs font-bold mb-2 uppercase tracking-wide">Ouro</label>
+                    <input
+                      type="number"
+                      value={editData.gold ?? selectedCharacter.gold}
+                      onChange={(e) => setEditData({ ...editData, gold: parseInt(e.target.value) })}
+                      className="w-full bg-slate-700/50 border border-yellow-500/30 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">Ouro</label>
-                <input
-                  type="number"
-                  value={editData.gold ?? selectedCharacter.gold}
-                  onChange={(e) => setEditData({ ...editData, gold: parseInt(e.target.value) })}
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg"
-                />
-              </div>
+                  {/* Status Section */}
+                  <div className="bg-gradient-to-r from-slate-700/30 to-slate-600/30 border border-slate-600/50 rounded-lg p-4">
+                    <label className="block text-gray-200 text-xs font-bold mb-3 uppercase tracking-wide">Status do Personagem</label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditData({ ...editData, isDeceased: false, causeOfDeath: '' })}
+                        className={`flex-1 py-2 px-3 rounded-lg transition font-bold text-sm ${
+                          !editData.isDeceased
+                            ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/50'
+                            : 'bg-slate-700/50 text-gray-400 hover:bg-slate-600/50 border border-slate-600'
+                        }`}
+                      >
+                        ❤️ Vivo
+                      </button>
+                      <button
+                        onClick={() => setEditData({ ...editData, isDeceased: true })}
+                        className={`flex-1 py-2 px-3 rounded-lg transition font-bold text-sm ${
+                          editData.isDeceased
+                            ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/50'
+                            : 'bg-slate-700/50 text-gray-400 hover:bg-slate-600/50 border border-slate-600'
+                        }`}
+                      >
+                        💀 Morto
+                      </button>
+                    </div>
+                  </div>
 
-              <div className="border-t border-slate-600 pt-4">
-                <label className="block text-gray-400 text-sm mb-3">Status do Personagem</label>
-                <div className="flex gap-3">
+                  {/* Cause of Death */}
+                  {editData.isDeceased && (
+                    <div className="bg-red-900/20 border border-red-600/40 rounded-lg p-4">
+                      <label className="block text-red-300 text-xs font-bold mb-2 uppercase tracking-wide">Causa da Morte</label>
+                      <textarea
+                        value={editData.causeOfDeath ?? selectedCharacter.causeOfDeath ?? ''}
+                        onChange={(e) => setEditData({ ...editData, causeOfDeath: e.target.value })}
+                        placeholder="Descreva a causa da morte do personagem..."
+                        className="w-full bg-slate-700/50 border border-red-500/30 text-white px-3 py-2 rounded-lg resize-none h-20 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Actions */}
+                <div className="flex gap-3 border-t border-slate-700/50 px-8 py-4 bg-slate-900/30">
                   <button
-                    onClick={() => setEditData({ ...editData, isDeceased: false, causeOfDeath: '' })}
-                    className={`flex-1 py-2 px-4 rounded-lg transition font-bold ${
-                      !editData.isDeceased
-                        ? 'bg-green-600 text-white'
-                        : 'bg-slate-600 text-gray-300 hover:bg-slate-500'
-                    }`}
+                    onClick={() => setShowEditModal(false)}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition"
                   >
-                    ❤️ Vivo
+                    Cancelar
                   </button>
                   <button
-                    onClick={() => setEditData({ ...editData, isDeceased: true })}
-                    className={`flex-1 py-2 px-4 rounded-lg transition font-bold ${
-                      editData.isDeceased
-                        ? 'bg-red-600 text-white'
-                        : 'bg-slate-600 text-gray-300 hover:bg-slate-500'
-                    }`}
+                    onClick={async () => {
+                      try {
+                        if (selectedCharacter && user) {
+                          await masterUpdateProfile(selectedCharacter.id, editData);
+                          await loadCharacters(user.uid);
+                          setShowEditModal(false);
+                        }
+                      } catch (error) {
+                        console.error('Erro ao salvar:', error);
+                        alert('Erro ao salvar alterações');
+                      }
+                    }}
+                    className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-orange-500/50"
                   >
-                    💀 Morto
+                    Salvar Alterações
                   </button>
                 </div>
               </div>
-
-              {editData.isDeceased && (
-                <div>
-                  <label className="block text-gray-400 text-sm mb-2">Causa da Morte</label>
-                  <textarea
-                    value={editData.causeOfDeath ?? selectedCharacter.causeOfDeath ?? ''}
-                    onChange={(e) => setEditData({ ...editData, causeOfDeath: e.target.value })}
-                    placeholder="Descreva a causa da morte do personagem..."
-                    className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg resize-none h-24"
-                  />
-                </div>
-              )}
             </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    if (selectedCharacter && user) {
-                      await masterUpdateProfile(selectedCharacter.id, editData);
-                      await loadCharacters(user.uid);
-                      setShowEditModal(false);
-                    }
-                  } catch (error) {
-                    console.error('Erro ao salvar:', error);
-                    alert('Erro ao salvar alterações');
-                  }
-                }}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition"
-              >
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
+          )}
+        </Motion>
       )}
     </div>
   );

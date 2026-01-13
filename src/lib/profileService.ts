@@ -67,6 +67,21 @@ export async function getUserProfile(userId: string) {
   }
 }
 
+// Buscar perfil por ID (alias para getUserProfile)
+export async function getProfileById(profileId: string) {
+  try {
+    const docRef = doc(db, 'profiles', profileId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as UserProfile;
+    }
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar perfil por ID:', error);
+    throw error;
+  }
+}
+
 // Atualizar perfil do usuário
 export async function updateUserProfile(userId: string, updates: Partial<UserProfile>) {
   try {

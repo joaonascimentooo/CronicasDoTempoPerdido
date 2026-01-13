@@ -17,7 +17,8 @@ export async function createTeam(
   teamName: string,
   description: string,
   leaderId: string,
-  leaderName: string
+  leaderName: string,
+  maxMembers: number = 5
 ): Promise<string> {
   try {
     const newTeam: Omit<Team, 'id'> = {
@@ -33,7 +34,7 @@ export async function createTeam(
           joinedAt: new Date(),
         },
       ],
-      maxMembers: 5,
+      maxMembers,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -65,18 +66,17 @@ export async function getTeam(teamId: string): Promise<Team | null> {
 // Buscar equipe de um usuário
 export async function getUserTeam(userId: string): Promise<Team | null> {
   try {
-    const q = query(
-      collection(db, 'teams'),
-      where('members', 'array-contains', userId)
-    );
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      return null;
+    const querySnapshot = await getDocs(collection(db, 'teams'));
+    
+    for (const doc of querySnapshot.docs) {
+      const team = doc.data() as Team;
+      const isMember = team.members.some((m) => m.userId === userId);
+      if (isMember) {
+        return { id: doc.id, ...team } as Team;
+      }
     }
-
-    const teamDoc = querySnapshot.docs[0];
-    return { id: teamDoc.id, ...teamDoc.data() } as Team;
+    
+    return null;
   } catch (error) {
     console.error('Erro ao buscar equipe do usuário:', error);
     throw error;
@@ -116,7 +116,7 @@ export async function joinTeam(
     // Verificar se já é membro
     const isMember = team.members.some((m) => m.userId === userId);
     if (isMember) {
-      throw new Error('Você já é membro desta equipe');
+      return { alreadyMember: true, teamId };
     }
 
     // Verificar limite de membros

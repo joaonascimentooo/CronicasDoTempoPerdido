@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
-import { getUserProfile } from '@/lib/profileService';
+import { getUserProfile, getProfileById } from '@/lib/profileService';
 import { getUserTeam, getAllTeams, createTeam, joinTeam, leaveTeam, deleteTeam } from '@/lib/teamService';
-import { UserProfile, Team } from '@/lib/types';
+import { UserProfile, Team, TeamMember } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 
 export default function TeamPage() {
@@ -15,10 +15,13 @@ export default function TeamPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [myTeam, setMyTeam] = useState<Team | null>(null);
   const [allTeams, setAllTeams] = useState<Team[]>([]);
+  const [memberProfiles, setMemberProfiles] = useState<Map<string, UserProfile>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [teamName, setTeamName] = useState('');
   const [teamDescription, setTeamDescription] = useState('');
+  const [teamMaxMembers, setTeamMaxMembers] = useState('5');
 
   useEffect(() => {
     const unsubscribe = onAuthChange((currentUser) => {
@@ -48,6 +51,22 @@ export default function TeamPage() {
       // Buscar todas as equipes
       const teams = await getAllTeams();
       setAllTeams(teams);
+
+      // Buscar perfis de todos os membros
+      if (team) {
+        const profiles = new Map<string, UserProfile>();
+        for (const member of team.members) {
+          try {
+            const memberProfile = await getProfileById(member.userId);
+            if (memberProfile) {
+              profiles.set(member.userId, memberProfile);
+            }
+          } catch (error) {
+            console.error(`Erro ao buscar perfil do membro ${member.userId}:`, error);
+          }
+        }
+        setMemberProfiles(profiles);
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
@@ -61,16 +80,24 @@ export default function TeamPage() {
       return;
     }
 
+    const maxMembers = parseInt(teamMaxMembers);
+    if (isNaN(maxMembers) || maxMembers < 2 || maxMembers > 20) {
+      alert('O número de membros deve estar entre 2 e 20');
+      return;
+    }
+
     try {
       await createTeam(
         teamName,
         teamDescription,
         user.uid,
-        profile.username
+        profile.username,
+        maxMembers
       );
       setShowCreateModal(false);
       setTeamName('');
       setTeamDescription('');
+      setTeamMaxMembers('5');
       loadTeamData(user.uid);
     } catch (error) {
       console.error('Erro ao criar equipe:', error);
@@ -82,12 +109,30 @@ export default function TeamPage() {
     if (!user || !profile) return;
 
     try {
-      await joinTeam(teamId, user.uid, profile.username);
+      const result = await joinTeam(teamId, user.uid, profile.username);
+      if (result && result.alreadyMember) {
+        // Você já é membro, fechar modal e recarregar dados
+        setShowJoinModal(false);
+        loadTeamData(user.uid);
+        return;
+      }
       setShowJoinModal(false);
       loadTeamData(user.uid);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao entrar na equipe:', error);
-      alert('Erro ao entrar na equipe');
+      
+      // Tratamento específico de erros
+      if (error.code === 'permission-denied') {
+        alert('Erro de permissão. Contate o administrador.');
+      } else if (error.message?.includes('Equipe não encontrada')) {
+        alert('Equipe não encontrada');
+      } else if (error.message?.includes('limite de membros')) {
+        alert('Esta equipe atingiu o limite de membros');
+      } else if (error.message?.includes('já é membro')) {
+        alert('Você já é membro desta equipe');
+      } else {
+        alert('Erro ao entrar na equipe: ' + error.message);
+      }
     }
   };
 
@@ -167,19 +212,36 @@ export default function TeamPage() {
                   <div className="mb-6">
                     <h4 className="text-lg font-bold text-gray-300 mb-3">Membros:</h4>
                     <div className="space-y-2">
-                      {myTeam.members.map((member) => (
-                        <div
-                          key={member.userId}
-                          className="bg-slate-700/50 rounded-lg p-3 flex justify-between items-center"
-                        >
-                          <div>
-                            <p className="text-white font-bold">{member.username}</p>
-                            <p className="text-gray-400 text-sm">
-                              {member.role === 'leader' ? '👑 Líder' : 'Membro'}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                      {myTeam.members.map((member) => {
+                        const memberProfile = memberProfiles.get(member.userId);
+                        const isDeceased = memberProfile?.isDeceased || false;
+                        
+                        return (
+                          <button
+                            key={member.userId}
+                            onClick={() => router.push(`/profile/view/${member.userId}`)}
+                            className={`w-full text-left rounded-lg p-3 flex justify-between items-center transition border ${
+                              isDeceased
+                                ? 'bg-red-900/30 border-red-700/50 hover:bg-red-900/50'
+                                : 'bg-green-900/30 border-green-700/50 hover:bg-green-900/50'
+                            }`}
+                          >
+                            <div>
+                              <p className="text-white font-bold hover:text-orange-400 transition">{member.username}</p>
+                              <p className="text-gray-400 text-sm">
+                                {member.role === 'leader' ? '👑 Líder' : 'Membro'}
+                              </p>
+                            </div>
+                            <div className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                              isDeceased
+                                ? 'bg-red-900/50 text-red-400 border border-red-600/50'
+                                : 'bg-green-900/50 text-green-400 border border-green-600/50'
+                            }`}>
+                              {isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -276,47 +338,81 @@ export default function TeamPage() {
 
       {/* Create Team Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-          <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-8 max-w-md w-full">
-            <h3 className="text-2xl font-bold text-orange-400 mb-6">Criar Equipe</h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border border-orange-500/40 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a6 6 0 00-9-5.197V13a7 7 0 0114 0v1h-5.207A6 6 0 0016 18z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-orange-400">Criar Equipe</h3>
+              </div>
+              <p className="text-gray-400 text-sm ml-13">Reúna seus melhores agentes</p>
+            </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="space-y-5 mb-8">
+              {/* Nome da Equipe */}
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Nome da Equipe</label>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">Nome da Equipe</label>
                 <input
                   type="text"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   placeholder="Ex: Guardiões da Noite"
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-orange-500 border border-slate-600"
+                  className="w-full bg-slate-600/50 hover:bg-slate-600/70 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-500/50 transition placeholder-gray-500"
                 />
               </div>
 
+              {/* Número Máximo de Membros */}
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Descrição (Opcional)</label>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">Número Máximo de Membros</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    value={teamMaxMembers}
+                    onChange={(e) => setTeamMaxMembers(e.target.value)}
+                    min="2"
+                    max="20"
+                    placeholder="2-20"
+                    className="flex-1 bg-slate-600/50 hover:bg-slate-600/70 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-500/50 transition placeholder-gray-500"
+                  />
+                  <div className="text-gray-400 text-sm bg-slate-600/30 px-3 py-2 rounded-lg border border-slate-500/30">
+                    {teamMaxMembers > 20 ? '20' : teamMaxMembers < 2 ? '2' : teamMaxMembers}
+                  </div>
+                </div>
+              </div>
+
+              {/* Descrição */}
+              <div>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">Descrição (Opcional)</label>
                 <textarea
                   value={teamDescription}
                   onChange={(e) => setTeamDescription(e.target.value)}
-                  placeholder="Descrição da equipe..."
-                  className="w-full bg-slate-600 text-white px-4 py-2 rounded-lg resize-none h-24 focus:outline-none focus:border-orange-500 border border-slate-600"
+                  placeholder="Descrição da equipe... (Ex: Uma equipe dedicada ao espionagem)"
+                  className="w-full bg-slate-600/50 hover:bg-slate-600/70 text-white px-4 py-3 rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-500/50 transition placeholder-gray-500"
                 />
               </div>
             </div>
 
-            <div className="flex gap-4">
+            {/* Botões */}
+            <div className="flex gap-3">
               <button
                 onClick={() => {
                   setShowCreateModal(false);
                   setTeamName('');
                   setTeamDescription('');
+                  setTeamMaxMembers('5');
                 }}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition"
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 border border-slate-500/50 hover:border-slate-400/50"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleCreateTeam}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition"
+                className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-orange-500/50 hover:shadow-xl"
               >
                 Criar
               </button>

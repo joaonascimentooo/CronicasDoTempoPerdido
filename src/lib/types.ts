@@ -91,4 +91,5 @@ export interface TeamMember {
   username: string;
   role: 'leader' | 'member';
   joinedAt: Date;
+  isDeceased?: boolean;
 }
