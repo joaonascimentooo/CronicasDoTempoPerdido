@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, getProfileById } from '@/lib/profileService';
-import { getUserTeam, getAllTeams, createTeam, joinTeam, leaveTeam, deleteTeam } from '@/lib/teamService';
+import { getUserTeam, getAllTeams, createTeam, joinTeam, leaveTeam, deleteTeam, updateTeamMaxMembers, removeMemberFromTeam } from '@/lib/teamService';
 import { UserProfile, Team } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 
@@ -22,6 +22,8 @@ export default function TeamPage() {
   const [teamName, setTeamName] = useState('');
   const [teamDescription, setTeamDescription] = useState('');
   const [teamMaxMembers, setTeamMaxMembers] = useState('5');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editMaxMembers, setEditMaxMembers] = useState('5');
 
   useEffect(() => {
     const unsubscribe = onAuthChange((currentUser) => {
@@ -167,6 +169,42 @@ export default function TeamPage() {
     }
   };
 
+  const handleUpdateMaxMembers = async () => {
+    if (!user || !myTeam) return;
+
+    const newMaxMembers = parseInt(editMaxMembers);
+    if (isNaN(newMaxMembers) || newMaxMembers < 2 || newMaxMembers > 20) {
+      alert('O número de membros deve estar entre 2 e 20');
+      return;
+    }
+
+    try {
+      await updateTeamMaxMembers(myTeam.id, user.uid, newMaxMembers);
+      setShowEditModal(false);
+      loadTeamData(user.uid);
+    } catch (error) {
+      console.error('Erro ao atualizar equipe:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      alert('Erro: ' + errorMsg);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!user || !myTeam) return;
+
+    const memberName = myTeam.members.find(m => m.userId === memberId)?.username || 'Membro';
+    if (!confirm(`Tem certeza que deseja expulsar ${memberName} da equipe?`)) return;
+
+    try {
+      await removeMemberFromTeam(myTeam.id, user.uid, memberId);
+      loadTeamData(user.uid);
+    } catch (error) {
+      console.error('Erro ao expulsar membro:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      alert('Erro: ' + errorMsg);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
@@ -206,9 +244,22 @@ export default function TeamPage() {
                     <p className="text-gray-300 mb-4">
                       Líder: <span className="text-orange-400 font-bold">{myTeam.leaderName}</span>
                     </p>
-                    <p className="text-gray-300">
-                      Membros: <span className="text-orange-400 font-bold">{myTeam.members.length}/{myTeam.maxMembers}</span>
-                    </p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-300">
+                        Membros: <span className="text-orange-400 font-bold">{myTeam.members.length}/{myTeam.maxMembers}</span>
+                      </p>
+                      {myTeam.leaderId === user?.uid && (
+                        <button
+                          onClick={() => {
+                            setEditMaxMembers(String(myTeam.maxMembers));
+                            setShowEditModal(true);
+                          }}
+                          className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition"
+                        >
+                          Editar
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Members List */}
@@ -235,12 +286,25 @@ export default function TeamPage() {
                                 {member.role === 'leader' ? '👑 Líder' : 'Membro'}
                               </p>
                             </div>
-                            <div className={`px-3 py-1 rounded-lg font-bold text-sm ${
-                              isDeceased
-                                ? 'bg-red-900/50 text-red-400 border border-red-600/50'
-                                : 'bg-green-900/50 text-green-400 border border-green-600/50'
-                            }`}>
-                              {isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                            <div className="flex items-center gap-2">
+                              <div className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                                isDeceased
+                                  ? 'bg-red-900/50 text-red-400 border border-red-600/50'
+                                  : 'bg-green-900/50 text-green-400 border border-green-600/50'
+                              }`}>
+                                {isDeceased ? '💀 Morto' : '❤️ Vivo'}
+                              </div>
+                              {myTeam.leaderId === user?.uid && member.userId !== user?.uid && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveMember(member.userId);
+                                  }}
+                                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs font-bold transition"
+                                >
+                                  Expulsar
+                                </button>
+                              )}
                             </div>
                           </button>
                         );
@@ -418,6 +482,57 @@ export default function TeamPage() {
                 className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-orange-500/50 hover:shadow-xl"
               >
                 Criar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Team Modal */}
+      {showEditModal && myTeam && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border border-blue-500/40 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            {/* Header */}
+            <div className="mb-8">
+              <h3 className="text-3xl font-bold text-blue-400 mb-2">Editar Equipe</h3>
+              <p className="text-gray-400 text-sm">Ajuste o tamanho máximo da equipe</p>
+            </div>
+
+            <div className="space-y-5 mb-8">
+              {/* Número Máximo de Membros */}
+              <div>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">
+                  Número Máximo de Membros (Atual: {myTeam.members.length})
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    value={editMaxMembers}
+                    onChange={(e) => setEditMaxMembers(e.target.value)}
+                    min={myTeam.members.length}
+                    max="20"
+                    className="flex-1 bg-slate-600/50 hover:bg-slate-600/70 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-500/50 transition placeholder-gray-500"
+                  />
+                  <div className="text-gray-400 text-sm bg-slate-600/30 px-3 py-2 rounded-lg border border-slate-500/30">
+                    {parseInt(editMaxMembers) > 20 ? '20' : editMaxMembers}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 border border-slate-500/50 hover:border-slate-400/50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUpdateMaxMembers}
+                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-blue-500/50 hover:shadow-xl"
+              >
+                Atualizar
               </button>
             </div>
           </div>

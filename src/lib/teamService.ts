@@ -173,6 +173,79 @@ export async function leaveTeam(teamId: string, userId: string): Promise<void> {
   }
 }
 
+// Atualizar número máximo de membros (apenas o líder)
+export async function updateTeamMaxMembers(
+  teamId: string,
+  userId: string,
+  newMaxMembers: number
+): Promise<void> {
+  try {
+    const teamRef = doc(db, 'teams', teamId);
+    const teamSnap = await getDoc(teamRef);
+
+    if (!teamSnap.exists()) {
+      throw new Error('Equipe não encontrada');
+    }
+
+    const team = teamSnap.data() as Team;
+
+    if (team.leaderId !== userId) {
+      throw new Error('Apenas o líder pode editar a equipe');
+    }
+
+    if (newMaxMembers < team.members.length) {
+      throw new Error(
+        `Não é possível reduzir para ${newMaxMembers} membros. A equipe tem ${team.members.length} membros atualmente.`
+      );
+    }
+
+    await updateDoc(teamRef, {
+      maxMembers: newMaxMembers,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar equipe:', error);
+    throw error;
+  }
+}
+
+// Expulsar membro da equipe (apenas o líder)
+export async function removeMemberFromTeam(
+  teamId: string,
+  leaderId: string,
+  memberToRemoveId: string
+): Promise<void> {
+  try {
+    const teamRef = doc(db, 'teams', teamId);
+    const teamSnap = await getDoc(teamRef);
+
+    if (!teamSnap.exists()) {
+      throw new Error('Equipe não encontrada');
+    }
+
+    const team = teamSnap.data() as Team;
+
+    if (team.leaderId !== leaderId) {
+      throw new Error('Apenas o líder pode expulsar membros');
+    }
+
+    // Não permitir expulsar o líder
+    if (team.leaderId === memberToRemoveId) {
+      throw new Error('Não é possível expulsar o líder');
+    }
+
+    const updatedMembers = team.members.filter((m) => m.userId !== memberToRemoveId);
+
+    await updateDoc(teamRef, {
+      members: updatedMembers,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Erro ao expulsar membro:', error);
+    throw error;
+  }
+}
+
 // Deletar uma equipe (apenas o líder)
 export async function deleteTeam(teamId: string, userId: string): Promise<void> {
   try {
