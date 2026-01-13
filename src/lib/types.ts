@@ -1,7 +1,8 @@
 // Tipos para o sistema de perfil do usuário
 
 export interface UserProfile {
-  id: string; // Mesmo ID do usuário Firebase
+  id: string; // Mesmo ID do documento
+  userId: string; // ID do usuário Firebase (proprietário)
   email: string;
   username: string;
   class: string; // Ocultista, Especialista, Combatente
@@ -25,6 +26,7 @@ export interface UserProfile {
   faction?: string; // Facção/Grupo do jogador
   description?: string;
   imageUrl?: string; // URL do avatar/boneco do jogador
+  isMaster?: boolean; // Flag indicando se é conta mestre
   createdAt: Date;
   updatedAt: Date;
 }

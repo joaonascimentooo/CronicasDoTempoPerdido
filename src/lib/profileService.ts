@@ -10,9 +10,17 @@ import {
   orderBy,
   limit,
   Timestamp,
+  where,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { UserProfile, RankingEntry } from './types';
+
+const MASTER_EMAIL = 'joaonascimento197@gmail.com';
+
+// Verificar se um usuário é mestre
+export function isMasterEmail(email: string): boolean {
+  return email === MASTER_EMAIL;
+}
 
 // Criar ou inicializar perfil de usuário
 export async function createUserProfile(
@@ -192,6 +200,104 @@ export async function getTopProfiles(limitResults: number = 10) {
     return profiles;
   } catch (error) {
     console.error('Erro ao buscar top perfis:', error);
+    throw error;
+  }
+}
+
+// Obter TODOS os perfis (para mestre gerenciar)
+export async function getAllProfiles(): Promise<UserProfile[]> {
+  try {
+    const q = query(
+      collection(db, 'profiles'),
+      orderBy('username', 'asc')
+    );
+    const querySnapshot = await getDocs(q);
+    const profiles: UserProfile[] = [];
+    querySnapshot.forEach((doc) => {
+      profiles.push({ id: doc.id, ...doc.data() } as UserProfile);
+    });
+    return profiles;
+  } catch (error) {
+    console.error('Erro ao buscar todos os perfis:', error);
+    throw error;
+  }
+}
+
+// Funções para Mestre
+
+// Criar um novo personagem como mestre
+export async function createMasterCharacter(
+  masterUserId: string,
+  characterData: Omit<UserProfile, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
+) {
+  try {
+    const docId = `${masterUserId}_${Date.now()}`;
+    const newProfile: UserProfile = {
+      ...characterData,
+      id: docId,
+      userId: masterUserId,
+      isMaster: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const dataToSave = Object.fromEntries(
+      Object.entries({
+        ...newProfile,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      }).filter(([, value]) => value !== undefined)
+    );
+
+    await setDoc(doc(db, 'profiles', docId), dataToSave);
+    return newProfile;
+  } catch (error) {
+    console.error('Erro ao criar personagem de mestre:', error);
+    throw error;
+  }
+}
+
+// Obter todos os personagens do mestre
+export async function getMasterCharacters(masterUserId: string): Promise<UserProfile[]> {
+  try {
+    const q = query(
+      collection(db, 'profiles'),
+      where('userId', '==', masterUserId),
+      orderBy('createdAt', 'desc')
+    );
+    const querySnapshot = await getDocs(q);
+    const profiles: UserProfile[] = [];
+    querySnapshot.forEach((doc) => {
+      profiles.push({ id: doc.id, ...doc.data() } as UserProfile);
+    });
+    return profiles;
+  } catch (error) {
+    console.error('Erro ao buscar personagens do mestre:', error);
+    throw error;
+  }
+}
+
+// Atualizar qualquer perfil (apenas mestre)
+export async function masterUpdateProfile(profileId: string, updates: Partial<UserProfile>) {
+  try {
+    const docRef = doc(db, 'profiles', profileId);
+    await updateDoc(docRef, {
+      ...updates,
+      updatedAt: Timestamp.now(),
+    });
+    return { id: profileId, ...updates };
+  } catch (error) {
+    console.error('Erro ao atualizar perfil:', error);
+    throw error;
+  }
+}
+
+// Deletar qualquer perfil (apenas mestre)
+export async function masterDeleteProfile(profileId: string) {
+  try {
+    await deleteDoc(doc(db, 'profiles', profileId));
+  } catch (error) {
+    console.error('Erro ao deletar perfil:', error);
     throw error;
   }
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
-import { getUserProfile } from '@/lib/profileService';
+import { getUserProfile, isMasterEmail, getMasterCharacters } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 import Link from 'next/link';
@@ -24,9 +24,26 @@ export default function ProfilePage() {
       setUser(currentUser);
 
       try {
-        const userProfile = await getUserProfile(currentUser.uid);
+        let userProfile: UserProfile | null = null;
+
+        // Se for mestre, busca o primeiro personagem ou redireciona
+        if (isMasterEmail(currentUser.email || '')) {
+          const characters = await getMasterCharacters(currentUser.uid);
+          if (characters.length > 0) {
+            userProfile = characters[0];
+          } else {
+            router.push('/master/new');
+            return;
+          }
+        } else {
+          // Para jogadores normais, busca seu perfil único
+          userProfile = await getUserProfile(currentUser.uid);
+        }
+
         if (userProfile) {
           setProfile(userProfile);
+        } else {
+          router.push('/profile/setup');
         }
       } catch (error) {
         console.error('Erro ao carregar perfil:', error);

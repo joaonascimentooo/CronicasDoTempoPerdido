@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { onAuthChange, logoutUser } from '@/lib/authService';
+import { isMasterEmail } from '@/lib/profileService';
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -40,6 +41,11 @@ export default function Navbar() {
               <span className="text-gray-400">...</span>
             ) : user ? (
               <>
+                {isMasterEmail(user.email || '') && (
+                  <Link href="/master" className="text-gray-300 hover:text-orange-400 font-bold">
+                    Painel Mestre
+                  </Link>
+                )}
                 <Link href="/ranking" className="text-gray-300 hover:text-white">
                   Ranking
                 </Link>

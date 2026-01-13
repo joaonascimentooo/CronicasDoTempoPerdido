@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
-import { createUserProfile, getUserProfile } from '@/lib/profileService';
+import { createUserProfile, getUserProfile, isMasterEmail } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 
@@ -38,6 +38,13 @@ export default function SetupProfile() {
       setUser(currentUser);
 
       try {
+        // Se for mestre, redireciona para /master para criar personagem
+        if (isMasterEmail(currentUser.email || '')) {
+          router.push('/master');
+          return;
+        }
+
+        // Para jogadores normais, verifica se já tem perfil
         const existingProfile = await getUserProfile(currentUser.uid);
         if (existingProfile) {
           router.push('/profile');
