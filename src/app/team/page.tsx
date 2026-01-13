@@ -111,15 +111,14 @@ export default function TeamPage() {
     try {
       const result = await joinTeam(teamId, user.uid, profile.username);
       if (result && result.alreadyMember) {
-        // Você já é membro, fechar modal e recarregar dados
-        setShowJoinModal(false);
+        // Você já é membro, recarregar dados
         loadTeamData(user.uid);
         return;
       }
-      setShowJoinModal(false);
       loadTeamData(user.uid);
-    } catch (error: any) {
-      console.error('Erro ao entrar na equipe:', error);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error('Erro ao entrar na equipe:', errorMsg);
       
       // Tratamento específico de erros
       if (error.code === 'permission-denied') {
