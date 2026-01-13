@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getGlobalRanking, getClassRanking, getTopProfiles } from '@/lib/profileService';
 import { RankingEntry, UserProfile } from '@/lib/types';
+import { Motion, spring } from 'react-motion';
 
 const CLASSES = ['Ocultista', 'Especialista', 'Combatente'];
 
@@ -37,27 +38,27 @@ export default function Ranking() {
 
   const renderRanking = () => {
     if (loading) {
-      return <div className="text-center text-gray-400">Carregando...</div>;
+      return <div className="text-center text-gray-400 py-12">Carregando...</div>;
     }
 
     if (ranking.length === 0) {
-      return <div className="text-center text-gray-400">Nenhum jogador encontrado</div>;
+      return <div className="text-center text-gray-400 py-12">Nenhum jogador encontrado</div>;
     }
 
     return (
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-700">
-              <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">Jogador</th>
-              <th className="px-4 py-3 text-left">Classe</th>
-              <th className="px-4 py-3 text-center">Nível</th>
-              <th className="px-4 py-3 text-center">Criaturas Mortas</th>
+            <tr className="border-b border-orange-500/20 bg-slate-800/50">
+              <th className="px-6 py-4 text-left font-bold text-orange-400">#</th>
+              <th className="px-6 py-4 text-left font-bold text-orange-400">Jogador</th>
+              <th className="px-6 py-4 text-left font-bold text-orange-400">Classe</th>
+              <th className="px-6 py-4 text-center font-bold text-orange-400">Nível</th>
+              <th className="px-6 py-4 text-center font-bold text-orange-400">Criaturas Mortas</th>
               {rankingType === 'kills' && (
                 <>
-                  <th className="px-4 py-3 text-center">Seres Mortos</th>
-                  <th className="px-4 py-3 text-center">Ouro</th>
+                  <th className="px-6 py-4 text-center font-bold text-orange-400">Seres Mortos</th>
+                  <th className="px-6 py-4 text-center font-bold text-orange-400">Ouro</th>
                 </>
               )}
             </tr>
@@ -68,25 +69,25 @@ export default function Ranking() {
               return (
                 <tr
                   key={index}
-                  className="border-b border-gray-700 hover:bg-gray-800 transition"
+                  className="border-b border-orange-500/10 hover:bg-orange-500/5 transition"
                 >
-                  <td className="px-4 py-3 font-bold text-orange-500">
+                  <td className="px-6 py-4 font-bold text-orange-400 text-lg">
                     {index + 1}
                   </td>
-                  <td className="px-4 py-3 font-bold">{isRankingEntry ? entry.username : entry.username}</td>
-                  <td className="px-4 py-3 text-gray-400">
+                  <td className="px-6 py-4 font-bold text-white">{isRankingEntry ? entry.username : entry.username}</td>
+                  <td className="px-6 py-4 text-gray-300">
                     {isRankingEntry ? entry.userClass : entry.class}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-6 py-4 text-center text-gray-300">
                     {entry.level}
                   </td>
-                  <td className="px-4 py-3 text-center font-bold text-orange-500">
+                  <td className="px-6 py-4 text-center font-bold text-green-400">
                     {entry.creatureKills}
                   </td>
                   {rankingType === 'kills' && isRankingEntry && (
                     <>
-                      <td className="px-4 py-3 text-center text-red-500">{entry.deaths}</td>
-                      <td className="px-4 py-3 text-center text-yellow-500">{entry.gold}</td>
+                      <td className="px-6 py-4 text-center text-red-400 font-bold">{entry.deaths}</td>
+                      <td className="px-6 py-4 text-center text-yellow-400 font-bold">{entry.gold}</td>
                     </>
                   )}
                 </tr>
@@ -99,65 +100,90 @@ export default function Ranking() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">Ranking Global</h1>
-        <p className="text-gray-400">Veja como você se compara com outros jogadores</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 px-6">
+      <div className="w-full max-w-7xl mx-auto">
+        {/* Header */}
+        <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 0 }) }}>
+          {(style) => (
+            <div style={{ opacity: style.opacity }} className="text-center mb-16">
+              <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                Ranking Global
+              </h1>
+              <p className="text-gray-400 text-lg">Veja como você se compara com outros jogadores</p>
+              <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto mt-6"></div>
+            </div>
+          )}
+        </Motion>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <button
-          onClick={() => setRankingType('kills')}
-          className={`px-6 py-2 rounded font-bold transition ${
-            rankingType === 'kills'
-              ? 'bg-orange-600 text-white'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
-        >
-          Por Criaturas Mortas
-        </button>
-        <button
-          onClick={() => setRankingType('level')}
-          className={`px-6 py-2 rounded font-bold transition ${
-            rankingType === 'level'
-              ? 'bg-orange-600 text-white'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
-        >
-          Por Nível
-        </button>
-        <button
-          onClick={() => setRankingType('class')}
-          className={`px-6 py-2 rounded font-bold transition ${
-            rankingType === 'class'
-              ? 'bg-orange-600 text-white'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
-        >
-          Por Classe
-        </button>
-      </div>
+        {/* Filter Buttons */}
+        <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 100 }) }}>
+          {(style) => (
+            <div style={{ opacity: style.opacity }} className="flex flex-wrap gap-3 mb-8 justify-center">
+              <button
+                onClick={() => setRankingType('kills')}
+                className={`px-6 py-3 rounded-lg font-bold transition ${
+                  rankingType === 'kills'
+                    ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                }`}
+              >
+                Por Criaturas Mortas
+              </button>
+              <button
+                onClick={() => setRankingType('level')}
+                className={`px-6 py-3 rounded-lg font-bold transition ${
+                  rankingType === 'level'
+                    ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                }`}
+              >
+                Por Nível
+              </button>
+              <button
+                onClick={() => setRankingType('class')}
+                className={`px-6 py-3 rounded-lg font-bold transition ${
+                  rankingType === 'class'
+                    ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                }`}
+              >
+                Por Classe
+              </button>
+            </div>
+          )}
+        </Motion>
 
-      {rankingType === 'class' && (
-        <div className="flex flex-wrap gap-2">
-          {CLASSES.map((cls) => (
-            <button
-              key={cls}
-              onClick={() => setSelectedClass(cls)}
-              className={`px-4 py-2 rounded transition ${
-                selectedClass === cls
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              {cls}
-            </button>
-          ))}
-        </div>
-      )}
+        {/* Class Selection */}
+        {rankingType === 'class' && (
+          <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 150 }) }}>
+            {(style) => (
+              <div style={{ opacity: style.opacity }} className="flex flex-wrap gap-3 mb-8 justify-center">
+                {CLASSES.map((cls) => (
+                  <button
+                    key={cls}
+                    onClick={() => setSelectedClass(cls)}
+                    className={`px-6 py-2 rounded-lg transition font-bold ${
+                      selectedClass === cls
+                        ? 'bg-orange-500 text-white border border-orange-400'
+                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                    }`}
+                  >
+                    {cls}
+                  </button>
+                ))}
+              </div>
+            )}
+          </Motion>
+        )}
 
-      <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-        {renderRanking()}
+        {/* Ranking Table */}
+        <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 200 }), y: spring(0, { delay: 200 }) }}>
+          {(style) => (
+            <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl overflow-hidden shadow-2xl">
+              {renderRanking()}
+            </div>
+          )}
+        </Motion>
       </div>
     </div>
   );
