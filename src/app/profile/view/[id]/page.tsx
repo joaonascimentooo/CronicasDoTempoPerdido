@@ -103,8 +103,10 @@ export default function ViewProfilePage() {
                   <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-2">
                     {profile.username}
                   </h1>
-                  <p className="text-2xl text-orange-400 font-bold mb-4">{profile.class}</p>
-                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                  <p className={`text-2xl font-bold mb-4 ${profile.isDeceased ? 'text-red-400' : 'text-orange-400'}`}>
+                    {profile.isDeceased ? 'Agente Falecido' : profile.class}
+                  </p>
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start items-center">
                     <div className="bg-slate-700/50 px-4 py-2 rounded-lg border border-orange-500/30">
                       <p className="text-gray-400 text-sm">Nível</p>
                       <p className="text-2xl font-bold text-orange-400">{profile.level}</p>
@@ -112,6 +114,13 @@ export default function ViewProfilePage() {
                     <div className="bg-slate-700/50 px-4 py-2 rounded-lg border border-orange-500/30">
                       <p className="text-gray-400 text-sm">XP</p>
                       <p className="text-2xl font-bold text-blue-400">{profile.experience}</p>
+                    </div>
+                    <div className={`px-4 py-2 rounded-lg border font-bold ${
+                      profile.isDeceased
+                        ? 'bg-red-900/50 border-red-600/50 text-red-400'
+                        : 'bg-green-900/50 border-green-600/50 text-green-400'
+                    }`}>
+                      {profile.isDeceased ? '💀 Morto' : '❤️ Vivo'}
                     </div>
                   </div>
                   {profile.description && (
@@ -122,6 +131,29 @@ export default function ViewProfilePage() {
             )}
           </Motion>
         </section>
+
+        {/* Death Notice Section */}
+        {profile.isDeceased && profile.causeOfDeath && (
+          <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 150 }), y: spring(0, { delay: 150 }) }}>
+            {(style) => (
+              <section 
+                style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                className="w-full py-8 px-6 bg-gradient-to-br from-red-950/50 to-red-900/30 rounded-xl border border-red-600/50 mb-8"
+              >
+                <div className="text-center">
+                  <p className="text-4xl mb-4">💀</p>
+                  <h2 className="text-3xl font-black text-red-400 mb-4">Agente Falecido</h2>
+                  <div className="bg-red-900/30 rounded-lg p-4 border border-red-600/30">
+                    <p className="text-gray-300 mb-2">
+                      <span className="font-bold text-red-400">Causa da Morte:</span>
+                    </p>
+                    <p className="text-gray-200 text-lg italic">{profile.causeOfDeath}</p>
+                  </div>
+                </div>
+              </section>
+            )}
+          </Motion>
+        )}
 
         {/* Stats Section */}
         <section className="w-full py-12 px-6 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center mb-8">
