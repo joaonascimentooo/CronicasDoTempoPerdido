@@ -49,6 +49,9 @@ export default function Navbar() {
                 <Link href="/ranking" className="text-gray-300 hover:text-white">
                   Ranking
                 </Link>
+                <Link href="/team" className="text-gray-300 hover:text-white">
+                  Equipe
+                </Link>
                 <Link href="/profile" className="text-gray-300 hover:text-white">
                   Meu Perfil
                 </Link>

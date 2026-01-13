@@ -73,3 +73,22 @@ export interface RankingEntry {
   gold: number;
   rank: number;
 }
+
+export interface Team {
+  id: string; // ID do documento
+  name: string; // Nome da equipe
+  description?: string;
+  leaderId: string; // ID do criador/líder da equipe
+  leaderName: string; // Nome do líder
+  members: TeamMember[]; // Membros da equipe
+  maxMembers: number; // Número máximo de membros
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TeamMember {
+  userId: string;
+  username: string;
+  role: 'leader' | 'member';
+  joinedAt: Date;
+}

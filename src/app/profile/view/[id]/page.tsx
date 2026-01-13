@@ -196,79 +196,9 @@ export default function ViewProfilePage() {
           </div>
         </section>
 
-        {/* Attributes Section */}
-        <section className="w-full py-12 px-6 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center mb-8">
-          <div className="w-full max-w-6xl">
-            <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
-              {(style) => (
-                <div className="text-center mb-16" style={{ opacity: style.opacity }}>
-                  <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
-                    Atributos
-                  </h2>
-                  <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
-                </div>
-              )}
-            </Motion>
+        {/* Attributes Section - REMOVED */}
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {[
-                { name: 'Agilidade', value: profile.dexterity, color: 'text-green-400', icon: '⚡' },
-                { name: 'Força', value: profile.strength, color: 'text-red-400', icon: '⚔️' },
-                { name: 'Intelecto', value: profile.intelligence, color: 'text-blue-400', icon: '🧠' },
-                { name: 'Vigor', value: profile.constitution, color: 'text-yellow-400', icon: '❤️' },
-                { name: 'Presença', value: profile.charisma, color: 'text-pink-400', icon: '✨' },
-              ].map((attr, index) => (
-                <Motion
-                  key={index}
-                  defaultStyle={{ opacity: 0, y: 20 }}
-                  style={{ opacity: spring(1, { delay: 500 + index * 80 }), y: spring(0, { delay: 500 + index * 80 }) }}
-                >
-                  {(style) => (
-                    <div
-                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-6 transition transform hover:scale-105"
-                      style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                    >
-                      <div className="text-3xl mb-2">{attr.icon}</div>
-                      <p className="text-gray-400 text-sm mb-2">{attr.name}</p>
-                      <p className={`text-3xl font-black ${attr.color}`}>{attr.value}</p>
-                    </div>
-                  )}
-                </Motion>
-              ))}
-            </div>
-
-            {/* Health and Mana */}
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6">
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-gray-400 font-bold">❤️ Saúde</p>
-                  <p className="text-gray-400">{profile.health}/{profile.maxHealth}</p>
-                </div>
-                <div className="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-red-500/30">
-                  <div
-                    className="bg-gradient-to-r from-red-500 to-red-600 h-full transition-all"
-                    style={{ width: `${(profile.health / profile.maxHealth) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              {profile.mana !== undefined && profile.maxMana !== undefined && (
-                <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-400 font-bold">🔮 Mana</p>
-                    <p className="text-gray-400">{profile.mana}/{profile.maxMana}</p>
-                  </div>
-                  <div className="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-blue-500/30">
-                    <div
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all"
-                      style={{ width: `${(profile.mana / profile.maxMana) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
+        {/* End of Profile */}
       </div>
     </div>
   );
