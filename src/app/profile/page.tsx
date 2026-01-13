@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, isMasterEmail, getMasterCharacters } from '@/lib/profileService';
-import { UserProfile } from '@/lib/types';
+import { getAllTeams } from '@/lib/teamService';
+import { UserProfile, Team } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 import Link from 'next/link';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userTeam, setUserTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -42,6 +44,16 @@ export default function ProfilePage() {
 
         if (userProfile) {
           setProfile(userProfile);
+          
+          // Carregar equipe do usuário
+          try {
+            const teams = await getAllTeams();
+            const team = teams.find(t => t.members.some(m => m.userId === userProfile.id));
+            setUserTeam(team || null);
+          } catch (error) {
+            console.error('Erro ao carregar equipe:', error);
+            setUserTeam(null);
+          }
         } else {
           router.push('/profile/setup');
         }
@@ -143,7 +155,7 @@ export default function ProfilePage() {
                       <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
                         Nível {profile.level}
                       </span>
-                      <span className="text-gray-400">Agente da V.I.G.I.A.</span>
+                      <span className="text-gray-400">{userTeam ? userTeam.name : 'Sem Equipe'}</span>
                     </div>
 
                     <div className="mb-6">
@@ -168,12 +180,20 @@ export default function ProfilePage() {
                     </p>
                   )}
 
-                  <Link
-                    href="/profile/edit"
-                    className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105"
-                  >
-                    Editar Perfil
-                  </Link>
+                  <div className="flex gap-4">
+                    <Link
+                      href="/profile/edit"
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105 text-center"
+                    >
+                      Editar Perfil
+                    </Link>
+                    <Link
+                      href="/team"
+                      className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105 text-center"
+                    >
+                      Ver Equipe
+                    </Link>
+                  </div>
                 </div>
               )}
             </Motion>
