@@ -93,3 +93,26 @@ export interface TeamMember {
   joinedAt: Date;
   isDeceased?: boolean;
 }
+export interface Mission {
+  id: string; // ID do documento
+  title: string; // Nome da missão
+  description: string; // Descrição completa
+  createdBy: string; // ID do mestre que criou
+  createdByName: string; // Nome do mestre
+  status: 'available' | 'in-progress' | 'completed'; // Status da missão
+  difficulty: 'easy' | 'medium' | 'hard' | 'legendary'; // Dificuldade
+  reward: {
+    experience: number;
+    gold: number;
+    items?: Item[];
+  };
+  requirements?: {
+    minLevel?: number;
+    requiredClass?: string[];
+    requiredTeam?: boolean;
+  };
+  acceptedBy?: string[]; // IDs dos usuários que aceitaram
+  completedBy?: string[]; // IDs dos usuários que completaram
+  createdAt: Date;
+  updatedAt: Date;
+}

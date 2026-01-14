@@ -51,6 +51,9 @@ export default function Navbar() {
                     Painel Mestre
                   </Link>
                 )}
+                <Link href="/missions" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base">
+                  Missões
+                </Link>
                 <Link href="/ranking" className="text-gray-300 hover:text-white text-sm lg:text-base">
                   Ranking
                 </Link>

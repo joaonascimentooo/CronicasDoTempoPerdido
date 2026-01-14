@@ -6,7 +6,8 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getMasterCharacters, isMasterEmail, masterDeleteProfile, masterUpdateProfile, getAllProfiles } from '@/lib/profileService';
 import { getAllTeams, joinTeam, leaveTeam } from '@/lib/teamService';
-import { UserProfile, Team } from '@/lib/types';
+import { getAllMissions, createMission, deleteMission } from '@/lib/missionService';
+import { UserProfile, Team, Mission } from '@/lib/types';
 import Link from 'next/link';
 import { Motion, spring } from 'react-motion';
 
@@ -24,6 +25,16 @@ export default function MasterPage() {
   const [editData, setEditData] = useState<Partial<UserProfile>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'my'>('all');
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [showMissionModal, setShowMissionModal] = useState(false);
+  const [missionForm, setMissionForm] = useState({
+    title: '',
+    description: '',
+    difficulty: 'medium' as const,
+    experienceReward: 100,
+    goldReward: 50,
+    minLevel: 1,
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthChange((currentUser) => {
@@ -62,6 +73,15 @@ export default function MasterPage() {
       } catch (teamError) {
         console.error('Erro ao carregar equipes:', teamError);
         setAllTeams([]);
+      }
+
+      // Buscar todas as missões
+      try {
+        const allMissions = await getAllMissions();
+        setMissions(allMissions);
+      } catch (missionError) {
+        console.error('Erro ao carregar missões:', missionError);
+        setMissions([]);
       }
 
       // Filtro inicial mostra tudo
@@ -145,6 +165,65 @@ export default function MasterPage() {
     } catch (error) {
       console.error('Erro ao recarregar equipes:', error);
       alert('Erro ao recarregar equipes');
+    }
+  };
+
+  const handleCreateMission = async () => {
+    if (!user || !missionForm.title.trim() || !missionForm.description.trim()) {
+      alert('Preencha todos os campos obrigatórios');
+      return;
+    }
+
+    try {
+      await createMission(
+        missionForm.title,
+        missionForm.description,
+        user.uid,
+        user.displayName || 'Mestre',
+        missionForm.difficulty,
+        {
+          experience: missionForm.experienceReward,
+          gold: missionForm.goldReward,
+        },
+        {
+          minLevel: missionForm.minLevel,
+        }
+      );
+
+      setShowMissionModal(false);
+      setMissionForm({
+        title: '',
+        description: '',
+        difficulty: 'medium',
+        experienceReward: 100,
+        goldReward: 50,
+        minLevel: 1,
+      });
+
+      if (user) {
+        await loadCharacters(user.uid);
+      }
+
+      alert('Missão criada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao criar missão:', error);
+      alert('Erro ao criar missão');
+    }
+  };
+
+  const handleDeleteMission = async (missionId: string) => {
+    if (!user) return;
+    if (!confirm('Tem certeza que deseja deletar esta missão?')) return;
+
+    try {
+      await deleteMission(missionId, user.uid);
+      if (user) {
+        await loadCharacters(user.uid);
+      }
+      alert('Missão deletada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao deletar missão:', error);
+      alert('Erro ao deletar missão');
     }
   };
 
@@ -527,6 +606,158 @@ export default function MasterPage() {
             </div>
           )}
         </Motion>
+      )}
+
+      {/* Missions Section */}
+      <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 200 }), y: spring(0, { delay: 200 }) }}>
+        {(style) => (
+          <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mt-16 mb-8 px-2 sm:px-0">
+            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/40 border border-purple-500/50 rounded-2xl p-6 sm:p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl sm:text-4xl font-bold text-purple-400">⚡ Missões</h2>
+                <button
+                  onClick={() => setShowMissionModal(true)}
+                  className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
+                >
+                  + Criar Missão
+                </button>
+              </div>
+
+              {missions.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">Nenhuma missão criada ainda</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {missions.map((mission) => (
+                    <div
+                      key={mission.id}
+                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-purple-500/30 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-bold text-purple-300">{mission.title}</h3>
+                        <span className="text-xs font-bold px-2 py-1 rounded bg-purple-600/50 text-purple-200">
+                          {mission.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-400 mb-3 line-clamp-2">{mission.description}</p>
+                      <div className="text-sm text-gray-300 mb-3 space-y-1">
+                        <p>💰 Ouro: {mission.reward.gold}</p>
+                        <p>⭐ XP: {mission.reward.experience}</p>
+                        {mission.acceptedBy && mission.acceptedBy.length > 0 && (
+                          <p>👥 Aceita por: {mission.acceptedBy.length}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteMission(mission.id)}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded text-xs transition"
+                      >
+                        Deletar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </Motion>
+
+      {/* Create Mission Modal */}
+      {showMissionModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border border-purple-500/40 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-3xl font-bold text-purple-400 mb-6">Criar Missão</h3>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">Título</label>
+                <input
+                  type="text"
+                  value={missionForm.title}
+                  onChange={(e) => setMissionForm({ ...missionForm, title: e.target.value })}
+                  placeholder="Nome da missão"
+                  className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-semibold mb-2">Descrição</label>
+                <textarea
+                  value={missionForm.description}
+                  onChange={(e) => setMissionForm({ ...missionForm, description: e.target.value })}
+                  placeholder="Descreva a missão"
+                  className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-4 py-3 rounded-lg resize-none h-24 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-gray-300 text-sm font-semibold mb-2">Dificuldade</label>
+                  <select
+                    value={missionForm.difficulty}
+                    onChange={(e) => setMissionForm({ ...missionForm, difficulty: e.target.value as any })}
+                    className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Médio</option>
+                    <option value="hard">Difícil</option>
+                    <option value="legendary">Lendário</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 text-sm font-semibold mb-2">Nível Mín.</label>
+                  <input
+                    type="number"
+                    value={missionForm.minLevel}
+                    onChange={(e) => setMissionForm({ ...missionForm, minLevel: parseInt(e.target.value) })}
+                    min="1"
+                    max="100"
+                    className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-gray-300 text-sm font-semibold mb-2">XP</label>
+                  <input
+                    type="number"
+                    value={missionForm.experienceReward}
+                    onChange={(e) => setMissionForm({ ...missionForm, experienceReward: parseInt(e.target.value) })}
+                    min="0"
+                    className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 text-sm font-semibold mb-2">Ouro</label>
+                  <input
+                    type="number"
+                    value={missionForm.goldReward}
+                    onChange={(e) => setMissionForm({ ...missionForm, goldReward: parseInt(e.target.value) })}
+                    min="0"
+                    className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowMissionModal(false)}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateMission}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
+              >
+                Criar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
