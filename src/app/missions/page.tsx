@@ -222,7 +222,6 @@ export default function MissionsPage() {
                 {(style) => (
                   <div
                     style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                    onClick={() => setExpandedMission(expandedMission === mission.id ? null : mission.id)}
                     className="bg-gradient-to-br from-indigo-700 to-slate-800 border border-indigo-500/30 rounded-xl p-6 group cursor-pointer hover:border-indigo-400 transition"
                   >
                     {/* Header */}
