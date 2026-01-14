@@ -186,6 +186,13 @@ export default function MissionsPage() {
                         </div>
                       </div>
 
+                      {/* Status Badge */}
+                      {acceptedMissions.some(m => m.id === mission.id) && (
+                        <div className="bg-emerald-900/30 border border-emerald-500/50 rounded-lg p-2 mb-4 text-center">
+                          <p className="text-emerald-300 font-semibold text-sm">✓ Missão Aceita</p>
+                        </div>
+                      )}
+
                       {/* Buttons */}
                       <div className="flex gap-2">
                         <button
@@ -194,12 +201,21 @@ export default function MissionsPage() {
                         >
                           Mais Informações
                         </button>
-                        <button
-                          onClick={() => handleAcceptMission(mission.id)}
-                          className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50"
-                        >
-                          Aceitar
-                        </button>
+                        {!acceptedMissions.some(m => m.id === mission.id) ? (
+                          <button
+                            onClick={() => handleAcceptMission(mission.id)}
+                            className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50"
+                          >
+                            Aceitar
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="flex-1 bg-slate-600 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed opacity-60"
+                          >
+                            Já Aceita
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
