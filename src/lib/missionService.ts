@@ -64,8 +64,8 @@ export async function getAvailableMissions(): Promise<Mission[]> {
       .map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      }))
-      .filter((mission) => mission.status === 'available') as Mission[];
+      } as Mission))
+      .filter((mission) => mission.status === 'available');
   } catch (error) {
     console.error('Erro ao buscar missões disponíveis:', error);
     throw error;
@@ -83,7 +83,7 @@ export async function getAllMissions(): Promise<Mission[]> {
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as Mission[];
+    } as Mission));
   } catch (error) {
     console.error('Erro ao buscar missões:', error);
     throw error;
@@ -233,7 +233,7 @@ export async function getUserAcceptedMissions(userId: string): Promise<Mission[]
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as Mission[];
+    } as Mission));
   } catch (error) {
     console.error('Erro ao buscar missões do usuário:', error);
     throw error;
