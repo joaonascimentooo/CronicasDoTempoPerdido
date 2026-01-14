@@ -54,13 +54,13 @@ export default function Navbar() {
                 <Link href="/missions" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base">
                   Missões
                 </Link>
-                <Link href="/ranking" className="text-gray-300 hover:text-white text-sm lg:text-base">
+                <Link href="/ranking" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
                   Ranking
                 </Link>
-                <Link href="/team" className="text-gray-300 hover:text-white text-sm lg:text-base">
+                <Link href="/team" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
                   Equipe
                 </Link>
-                <Link href="/profile" className="text-gray-300 hover:text-white text-sm lg:text-base">
+                <Link href="/profile" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
                   Meu Perfil
                 </Link>
                 <div className="text-xs lg:text-sm text-gray-400 truncate max-w-xs">
@@ -68,17 +68,17 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 px-3 lg:px-4 py-2 rounded transition text-sm lg:text-base"
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg hover:shadow-red-600/50"
                 >
                   Sair
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-gray-300 hover:text-white transition text-sm lg:text-base">
+                <Link href="/login" className="text-gray-300 hover:text-orange-400 font-bold transition text-sm lg:text-base">
                   Login
                 </Link>
-                <Link href="/register" className="bg-orange-600 hover:bg-orange-700 px-3 lg:px-4 py-2 rounded transition text-sm lg:text-base">
+                <Link href="/register" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg hover:shadow-orange-600/50">
                   Registrar
                 </Link>
               </>
@@ -106,29 +106,36 @@ export default function Navbar() {
                 {isMasterEmail(user.email || '') && (
                   <Link 
                     href="/master" 
-                    className="block text-gray-300 hover:text-orange-400 font-bold py-2"
+                    className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Painel Mestre
                   </Link>
                 )}
                 <Link 
+                  href="/missions" 
+                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Missões
+                </Link>
+                <Link 
                   href="/ranking" 
-                  className="block text-gray-300 hover:text-white py-2"
+                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
                   onClick={() => setMenuOpen(false)}
                 >
                   Ranking
                 </Link>
                 <Link 
                   href="/team" 
-                  className="block text-gray-300 hover:text-white py-2"
+                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
                   onClick={() => setMenuOpen(false)}
                 >
                   Equipe
                 </Link>
                 <Link 
                   href="/profile" 
-                  className="block text-gray-300 hover:text-white py-2"
+                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
                   onClick={() => setMenuOpen(false)}
                 >
                   Meu Perfil
@@ -138,7 +145,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition text-sm text-white"
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm shadow-lg hover:shadow-red-600/50"
                 >
                   Sair
                 </button>
@@ -147,14 +154,14 @@ export default function Navbar() {
               <>
                 <Link 
                   href="/login" 
-                  className="block text-gray-300 hover:text-white transition py-2"
+                  className="block text-gray-300 hover:text-orange-400 font-bold transition py-2"
                   onClick={() => setMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link 
                   href="/register" 
-                  className="block bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded transition text-white text-center"
+                  className="block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-center shadow-lg hover:shadow-orange-600/50"
                   onClick={() => setMenuOpen(false)}
                 >
                   Registrar
