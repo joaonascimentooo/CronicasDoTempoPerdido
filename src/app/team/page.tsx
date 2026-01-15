@@ -7,7 +7,7 @@ import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, getProfileById } from '@/lib/profileService';
 import { getUserTeam, getAllTeams, createTeam, joinTeam, leaveTeam, deleteTeam, updateTeamMaxMembers, removeMemberFromTeam } from '@/lib/teamService';
 import { UserProfile, Team } from '@/lib/types';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 
 export default function TeamPage() {
   const router = useRouter();

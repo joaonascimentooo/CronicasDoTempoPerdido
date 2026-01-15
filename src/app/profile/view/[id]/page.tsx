@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { UserProfile } from '@/lib/types';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 import Link from 'next/link';
 
 export default function ViewProfilePage() {

@@ -7,7 +7,7 @@ import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, isMasterEmail, getMasterCharacters } from '@/lib/profileService';
 import { getAllTeams } from '@/lib/teamService';
 import { UserProfile, Team } from '@/lib/types';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -88,24 +88,25 @@ export default function ProfilePage() {
         <div className="relative z-10 text-center max-w-2xl">
           <Motion defaultStyle={{ opacity: 0, y: -20 }} style={{ opacity: spring(1), y: spring(0) }}>
             {(style) => (
-              <>
-                <div className="text-6xl mb-6" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                  👤
-                </div>
-                <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4" style={{ opacity: style.opacity }}>
-                  Perfil Vazio
-                </h2>
-                <p className="text-gray-300 text-lg mb-8" style={{ opacity: style.opacity }}>
-                  Você ainda não criou seu perfil. Configure seu personagem para começar sua jornada como agente da VIGIA.
-                </p>
-                <button
-                  onClick={() => router.push('/profile/setup')}
-                  className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg"
-                  style={{ opacity: style.opacity }}
-                >
-                  Criar Meu Perfil
-                </button>
-              </>
+              <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                <>
+                  <div className="text-6xl mb-6">
+                    👤
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                    Perfil Vazio
+                  </h2>
+                  <p className="text-gray-300 text-lg mb-8">
+                    Você ainda não criou seu perfil. Configure seu personagem para começar sua jornada como agente da VIGIA.
+                  </p>
+                  <button
+                    onClick={() => router.push('/profile/setup')}
+                    className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg"
+                  >
+                    Criar Meu Perfil
+                  </button>
+                </>
+              </div>
             )}
           </Motion>
         </div>
@@ -225,15 +226,16 @@ export default function ProfilePage() {
               <Motion
                 key={index}
                 defaultStyle={{ opacity: 0, y: 20 }}
-                style={{ opacity: spring(1, { delay: 400 + index * 100 }), y: spring(0, { delay: 400 + index * 100 }) }}
+                style={{ opacity: spring(1, { delay: 300 + index * 100 }), y: spring(0, { delay: 300 + index * 100 }) }}
               >
                 {(style) => (
-                  <div
-                    className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition"
-                    style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                  >
-                    <p className="text-gray-400 text-sm mb-2">{stat.label}</p>
-                    <p className={`text-4xl font-black ${stat.color}`}>{stat.value}</p>
+                  <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                    <div
+                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition"
+                    >
+                      <p className="text-gray-400 text-sm mb-2">{stat.label}</p>
+                      <p className={`text-4xl font-black ${stat.color}`}>{stat.value}</p>
+                    </div>
                   </div>
                 )}
               </Motion>

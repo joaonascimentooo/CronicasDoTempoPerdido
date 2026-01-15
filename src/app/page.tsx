@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 import { Search, Radio, BookOpen, Settings } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 
 export default function Home() {
-  const introRef = useInView();
-  const responsabilitiesRef = useInView();
+  const { ref: introRef, isInView: introIsInView } = useInView();
+  const { ref: responsabilitiesRef, isInView: responsabilitiesIsInView } = useInView();
   return (
     <div className="w-full min-h-screen">
-      <section className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative">
+      <section className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative">
         <div className="absolute top-0 left-0 w-48 sm:w-96 h-48 sm:h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
@@ -18,7 +18,7 @@ export default function Home() {
           <Motion defaultStyle={{ opacity: 0, y: -40 }} style={{ opacity: spring(1), y: spring(0) }}>
             {(style) => (
               <>
-                <h1 className="text-5xl sm:text-7xl md:text-8xl font-black mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                <h1 className="text-5xl sm:text-7xl md:text-8xl font-black mb-4 sm:mb-6 text-transparent bg-clip-text bg-linear-to-r from-orange-400 via-orange-500 to-red-500" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
                   VIGIA
                 </h1>
                 <p className="text-base sm:text-xl md:text-2xl text-orange-300 mb-6 sm:mb-8 font-light">Os Guardiões do Fluxo Temporal</p>
@@ -29,7 +29,7 @@ export default function Home() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 300 }), y: spring(0, { delay: 300 }) }}>
             {(style) => (
               <p className="text-sm sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                "O tempo é um tecido que sangra. Nós somos os que contam as gotas."
+                &ldquo;O tempo é um tecido que sangra. Nós somos os que contam as gotas.&rdquo;
               </p>
             )}
           </Motion>
@@ -37,12 +37,12 @@ export default function Home() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 600 }), y: spring(0, { delay: 600 }) }}>
             {(style) => (
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                <Link href="/profile" className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition transform hover:scale-105 shadow-lg">
-                  Meu Perfil
-                </Link>
-                <Link href="/ranking" className="inline-block bg-slate-700 hover:bg-slate-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition border border-slate-500">
-                  Ranking Global
-                </Link>
+            <Link href="/profile" className="inline-block bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition transform hover:scale-105 shadow-lg">
+              Meu Perfil
+            </Link>
+            <Link href="/ranking" className="inline-block bg-slate-700 hover:bg-slate-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition border border-slate-500">
+              Ranking Global
+            </Link>
               </div>
             )}
           </Motion>
@@ -57,9 +57,9 @@ export default function Home() {
         </Motion>
       </section>
 
-      <section className="w-full py-12 sm:py-20 px-4 sm:px-6 bg-slate-800 flex justify-center" ref={introRef.ref}>
+      <section className="w-full py-12 sm:py-20 px-4 sm:px-6 bg-slate-800 flex justify-center" ref={introRef}>
         <div className="w-full max-w-5xl">
-          <Motion defaultStyle={{ opacity: 0, y: 40 }} style={{ opacity: introRef.isInView ? spring(1) : spring(0), y: introRef.isInView ? spring(0) : spring(40) }}>
+          <Motion defaultStyle={{ opacity: 0, y: 40 }} style={{ opacity: introIsInView ? spring(1) : spring(0), y: introIsInView ? spring(0) : spring(40) }}>
             {(style) => (
               <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
                 <p className="text-center text-gray-200 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8">
@@ -74,15 +74,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center" ref={responsabilitiesRef.ref}>
+      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 bg-linear-to-b from-slate-900 to-slate-800 flex justify-center" ref={responsabilitiesRef}>
         <div className="w-full max-w-6xl">
           <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
             {(style) => (
               <div className="text-center mb-12 sm:mb-16" style={{ opacity: style.opacity }}>
-                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-3 sm:mb-4">
+                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500 mb-3 sm:mb-4">
                   Nossas Responsabilidades
                 </h2>
-                <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+                <div className="w-16 sm:w-24 h-1 bg-linear-to-r from-orange-400 to-orange-500 mx-auto"></div>
               </div>
             )}
           </Motion>
@@ -117,11 +117,11 @@ export default function Home() {
               <Motion
                 key={index}
                 defaultStyle={{ opacity: 0, y: 40 }}
-                style={{ opacity: responsabilitiesRef.isInView ? spring(1, { delay: item.delay }) : spring(0), y: responsabilitiesRef.isInView ? spring(0, { delay: item.delay }) : spring(40) }}
+                style={{ opacity: responsabilitiesIsInView ? spring(1, { delay: item.delay }) : spring(0), y: responsabilitiesIsInView ? spring(0, { delay: item.delay }) : spring(40) }}
               >
                 {(style) => (
                   <div
-                    className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-4 sm:p-6 md:p-8 transition transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20"
+                    className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-4 sm:p-6 md:p-8 transition transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20"
                     style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                   >
                     <div className="mb-4">
@@ -150,7 +150,7 @@ export default function Home() {
                 </p>
                 <Link
                   href="/profile"
-                  className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition transform hover:scale-105 shadow-lg"
+                  className="inline-block bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition transform hover:scale-105 shadow-lg"
                 >
                   Acessar Perfil
                 </Link>

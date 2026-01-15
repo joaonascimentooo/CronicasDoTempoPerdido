@@ -7,7 +7,7 @@ import { onAuthChange } from '@/lib/authService';
 import { getUserProfile } from '@/lib/profileService';
 import { getAvailableMissions, acceptMission, rejectMission, getUserAcceptedMissions } from '@/lib/missionService';
 import { Mission } from '@/lib/types';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 import { Zap } from 'lucide-react';
 
 export default function MissionsPage() {
@@ -150,7 +150,7 @@ export default function MissionsPage() {
                 <Motion
                   key={mission.id}
                   defaultStyle={{ opacity: 0, y: 20 }}
-                  style={{ opacity: spring(1), y: spring(0) }}
+                  style={{ opacity: spring(1, { stiffness: 80, damping: 20 }), y: spring(0, { stiffness: 80, damping: 20 }) }}
                 >
                   {(style) => (
                     <div
@@ -240,7 +240,7 @@ export default function MissionsPage() {
               <Motion
                 key={mission.id}
                 defaultStyle={{ opacity: 0, y: 20 }}
-                style={{ opacity: spring(1), y: spring(0) }}
+                style={{ opacity: spring(1, { stiffness: 80, damping: 20 }), y: spring(0, { stiffness: 80, damping: 20 }) }}
               >
                 {(style) => (
                   <div

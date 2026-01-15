@@ -6,7 +6,7 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { createUserProfile, getUserProfile, isMasterEmail } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 
 const CLASSES = ['Ocultista', 'Especialista', 'Combatente'];
 

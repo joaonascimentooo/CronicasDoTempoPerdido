@@ -10,7 +10,7 @@ import { getAllTeams, joinTeam, leaveTeam } from '@/lib/teamService';
 import { getAllMissions, createMission, deleteMission } from '@/lib/missionService';
 import { UserProfile, Team, Mission } from '@/lib/types';
 import Link from 'next/link';
-import { Motion, spring } from 'react-motion';
+import { Motion, spring } from '@/lib/MotionWrapper';
 
 export default function MasterPage() {
   const router = useRouter();
