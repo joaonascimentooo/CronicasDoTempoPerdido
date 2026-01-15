@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getMasterCharacters, isMasterEmail, masterDeleteProfile, masterUpdateProfile, getAllProfiles } from '@/lib/profileService';
@@ -30,7 +31,7 @@ export default function MasterPage() {
   const [missionForm, setMissionForm] = useState({
     title: '',
     description: '',
-    difficulty: 'medium' as const,
+    difficulty: 'medium' as 'easy' | 'medium' | 'hard' | 'legendary',
     experienceReward: 100,
     goldReward: 50,
     minLevel: 1,
@@ -150,9 +151,10 @@ export default function MasterPage() {
       if (user) {
         await loadCharacters(user.uid);
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       console.error('Erro ao mudar equipe:', error);
-      alert('Erro ao mudar equipe: ' + error.message);
+      alert('Erro ao mudar equipe: ' + errorMsg);
     }
   };
 
@@ -235,7 +237,7 @@ export default function MasterPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-slate-900 to-slate-800 flex items-center justify-center">
         <div className="text-white text-2xl">Carregando...</div>
       </div>
     );
@@ -246,14 +248,14 @@ export default function MasterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="w-full py-6 sm:py-12 px-0 sm:px-6">
         <div className="w-full max-w-7xl mx-auto">
           {/* Header */}
           <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 0 }) }}>
             {(style) => (
               <div style={{ opacity: style.opacity }} className="text-center mb-8 sm:mb-12 px-2">
-                <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-2 sm:mb-4">
+                <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500 mb-2 sm:mb-4">
                   Painel do Mestre
                 </h1>
                 <p className="text-gray-400 text-sm sm:text-base md:text-lg">Gerencie seus personagens e controle o jogo</p>
@@ -268,7 +270,7 @@ export default function MasterPage() {
               <Motion defaultStyle={{ opacity: 0, x: -20 }} style={{ opacity: spring(1, { delay: 100 }), x: spring(0, { delay: 100 }) }}>
                 {(style) => (
                   <div style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}>
-<div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6">
+<div className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6">
                     <h2 className="text-xl sm:text-2xl font-bold text-orange-400 mb-3 sm:mb-4">Personagens</h2>
 
                       {/* Search */}
@@ -335,7 +337,7 @@ export default function MasterPage() {
 
                       <Link
                         href="/master/new"
-                        className="w-full mt-6 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-3 px-4 rounded-lg transition text-center block"
+                        className="w-full mt-6 bg-linear-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-3 px-4 rounded-lg transition text-center block"
                       >
                         + Novo Personagem
                       </Link>
@@ -351,7 +353,7 @@ export default function MasterPage() {
                 <Motion defaultStyle={{ opacity: 0, x: 20 }} style={{ opacity: spring(1, { delay: 200 }), x: spring(0, { delay: 200 }) }}>
                   {(style) => (
                     <div style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}>
-                      <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6 lg:p-8">
+                      <div className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6 lg:p-8">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 sm:mb-6 gap-3 sm:gap-0">
                           <div>
                             <h2 className="text-2xl sm:text-3xl font-bold text-orange-400 mb-2">{selectedCharacter.username}</h2>
@@ -388,7 +390,7 @@ export default function MasterPage() {
                           
                           {allTeams.length === 0 ? (
                             <div className="bg-slate-700 border border-orange-500/20 rounded-lg p-2 sm:p-3 text-gray-400 text-xs sm:text-sm">
-                              Nenhuma equipe disponível. Clique em "Recarregar" para tentar novamente.
+                              Nenhuma equipe disponível. Clique em &quot;Recarregar&quot; para tentar novamente.
                             </div>
                           ) : (
                             <select
@@ -449,7 +451,7 @@ export default function MasterPage() {
 
                         <button
                           onClick={() => handleEditCharacter(selectedCharacter)}
-                          className="w-full bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base"
+                          className="w-full bg-linear-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base"
                         >
                           Editar Personagem
                         </button>
@@ -458,7 +460,7 @@ export default function MasterPage() {
                   )}
                 </Motion>
               ) : (
-                <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6 lg:p-8 text-center">
+                <div className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-4 sm:p-6 lg:p-8 text-center">
                   <p className="text-gray-400 text-sm sm:text-lg">Selecione um personagem para editar</p>
                 </div>
               )}
@@ -472,10 +474,10 @@ export default function MasterPage() {
         <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
           {(style) => (
             <div style={{ opacity: style.opacity }} className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-3 sm:p-6">
-              <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 rounded-2xl max-w-md w-full max-h-screen sm:max-h-96 overflow-y-auto">
+              <div className="bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 rounded-2xl max-w-md w-full max-h-screen sm:max-h-96 overflow-y-auto">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-orange-600/30 to-orange-500/20 border-b border-orange-500/30 px-4 sm:px-8 py-4 sm:py-6">
-                  <h3 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-300 truncate">
+                <div className="bg-linear-to-r from-orange-600/30 to-orange-500/20 border-b border-orange-500/30 px-4 sm:px-8 py-4 sm:py-6">
+                  <h3 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-300 truncate">
                     Editar {selectedCharacter.username}
                   </h3>
                   <p className="text-gray-500 text-xs sm:text-sm mt-1">Atualize os dados do personagem</p>
@@ -535,15 +537,41 @@ export default function MasterPage() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-cyan-300 text-xs font-bold mb-1 uppercase tracking-wide">URL da Imagem</label>
+                    <input
+                      type="url"
+                      value={editData.imageUrl ?? selectedCharacter.imageUrl ?? ''}
+                      onChange={(e) => setEditData({ ...editData, imageUrl: e.target.value })}
+                      placeholder="https://exemplo.com/avatar.png"
+                      className="w-full bg-slate-700/50 border border-cyan-500/30 text-white px-2 sm:px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition"
+                    />
+                    {(editData.imageUrl ?? selectedCharacter.imageUrl) && (
+                      <div className="mt-2">
+                        <p className="text-xs text-gray-400 mb-1">Preview:</p>
+                        <Image
+                          src={editData.imageUrl ?? selectedCharacter.imageUrl ?? ''}
+                          alt="Avatar preview"
+                          width={64}
+                          height={64}
+                          className="w-16 h-16 rounded-lg object-cover border border-cyan-500/50"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   {/* Status Section */}
-                  <div className="bg-gradient-to-r from-slate-700/30 to-slate-600/30 border border-slate-600/50 rounded-lg p-3 sm:p-4">
+                  <div className="bg-linear-to-r from-slate-700/30 to-slate-600/30 border border-slate-600/50 rounded-lg p-3 sm:p-4">
                     <label className="block text-gray-200 text-xs font-bold mb-2 sm:mb-3 uppercase tracking-wide">Status do Personagem</label>
                     <div className="flex gap-2">
                       <button
                         onClick={() => setEditData({ ...editData, isDeceased: false, causeOfDeath: '' })}
                         className={`flex-1 py-2 px-2 sm:px-3 rounded-lg transition font-bold text-xs sm:text-sm ${
                           !editData.isDeceased
-                            ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/50'
+                            ? 'bg-linear-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/50'
                             : 'bg-slate-700/50 text-gray-400 hover:bg-slate-600/50 border border-slate-600'
                         }`}
                       >
@@ -553,7 +581,7 @@ export default function MasterPage() {
                         onClick={() => setEditData({ ...editData, isDeceased: true })}
                         className={`flex-1 py-2 px-2 sm:px-3 rounded-lg transition font-bold text-xs sm:text-sm ${
                           editData.isDeceased
-                            ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/50'
+                            ? 'bg-linear-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/50'
                             : 'bg-slate-700/50 text-gray-400 hover:bg-slate-600/50 border border-slate-600'
                         }`}
                       >
@@ -597,7 +625,7 @@ export default function MasterPage() {
                         alert('Erro ao salvar alterações');
                       }
                     }}
-                    className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition shadow-lg shadow-orange-500/50 text-sm sm:text-base"
+                    className="flex-1 bg-linear-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition shadow-lg shadow-orange-500/50 text-sm sm:text-base"
                   >
                     Salvar
                   </button>
@@ -612,12 +640,12 @@ export default function MasterPage() {
       <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 200 }), y: spring(0, { delay: 200 }) }}>
         {(style) => (
           <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mt-16 mb-8 px-2 sm:px-0">
-            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/40 border border-purple-500/50 rounded-2xl p-6 sm:p-8">
+            <div className="bg-linear-to-br from-purple-900/30 to-slate-900/40 border border-purple-500/50 rounded-2xl p-6 sm:p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl sm:text-4xl font-bold text-purple-400">⚡ Missões</h2>
                 <button
                   onClick={() => setShowMissionModal(true)}
-                  className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
+                  className="bg-linear-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
                 >
                   + Criar Missão
                 </button>
@@ -630,7 +658,7 @@ export default function MasterPage() {
                   {missions.map((mission) => (
                     <div
                       key={mission.id}
-                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-purple-500/30 rounded-lg p-4"
+                      className="bg-linear-to-br from-slate-700 to-slate-800 border border-purple-500/30 rounded-lg p-4"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg font-bold text-purple-300">{mission.title}</h3>
@@ -664,7 +692,7 @@ export default function MasterPage() {
       {/* Create Mission Modal */}
       {showMissionModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 border border-purple-500/40 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 border border-purple-500/40 rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <h3 className="text-3xl font-bold text-purple-400 mb-6">Criar Missão</h3>
 
             <div className="space-y-4 mb-6">
@@ -694,7 +722,7 @@ export default function MasterPage() {
                   <label className="block text-gray-300 text-sm font-semibold mb-2">Dificuldade</label>
                   <select
                     value={missionForm.difficulty}
-                    onChange={(e) => setMissionForm({ ...missionForm, difficulty: e.target.value as any })}
+                    onChange={(e) => setMissionForm({ ...missionForm, difficulty: e.target.value as 'easy' | 'medium' | 'hard' | 'legendary' })}
                     className="w-full bg-slate-600/50 border border-slate-500/50 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="easy">Fácil</option>
@@ -751,7 +779,7 @@ export default function MasterPage() {
               </button>
               <button
                 onClick={handleCreateMission}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
+                className="flex-1 bg-linear-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg shadow-purple-600/50"
               >
                 Criar
               </button>
