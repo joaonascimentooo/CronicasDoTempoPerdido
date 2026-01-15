@@ -9,7 +9,7 @@ import { ShopItem } from '@/lib/shopService';
 import { getUserProfile } from '@/lib/profileService';
 import { UserProfile } from '@/lib/types';
 import { Motion, spring } from '@/lib/MotionWrapper';
-import { Wand2, Sword, Shield, Zap, ShoppingCart, Coins, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Wand2, Sword, Shield, Zap, ShoppingCart, Coins, ArrowLeft, ChevronRight, Info } from 'lucide-react';
 
 export default function ShopPage() {
   const [user] = useAuthState(auth);
@@ -23,6 +23,8 @@ export default function ShopPage() {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [selectedItemForBuy, setSelectedItemForBuy] = useState<ShopItem | null>(null);
   const [buyQuantity, setBuyQuantity] = useState(1);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedItemForDetails, setSelectedItemForDetails] = useState<ShopItem | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -117,6 +119,11 @@ export default function ShopPage() {
       default:
         return <Wand2 className="w-5 h-5" />;
     }
+  };
+
+  const handleShowDetails = (item: ShopItem) => {
+    setSelectedItemForDetails(item);
+    setShowDetailsModal(true);
   };
 
   if (loading) {
@@ -414,18 +421,28 @@ export default function ShopPage() {
                           {item.stock} em estoque
                         </span>
                       </div>
-                      <button
-                        onClick={() => handleBuyItem(item.id)}
-                        disabled={buyingItem === item.id || profile.gold < item.price}
-                        className={`w-full px-5 py-2 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
-                          profile.gold < item.price
-                            ? 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
-                            : 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500 hover:shadow-lg hover:shadow-yellow-600/40'
-                        }`}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        {buyingItem === item.id ? 'Comprando...' : 'Comprar'}
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleShowDetails(item)}
+                          className="flex-1 px-5 py-2 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-stone-700/60 hover:bg-stone-700 text-amber-200 border border-yellow-700/40 hover:border-yellow-500"
+                          title="Ver detalhes"
+                        >
+                          <Info className="w-4 h-4" />
+                          Detalhes
+                        </button>
+                        <button
+                          onClick={() => handleBuyItem(item.id)}
+                          disabled={buyingItem === item.id || profile.gold < item.price}
+                          className={`flex-1 px-5 py-2 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+                            profile.gold < item.price
+                              ? 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
+                              : 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500 hover:shadow-lg hover:shadow-yellow-600/40'
+                          }`}
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                          {buyingItem === item.id ? 'Comprando...' : 'Comprar'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -536,6 +553,139 @@ export default function ShopPage() {
                   >
                     <ShoppingCart className="w-4 h-4" />
                     {buyingItem === selectedItemForBuy.id ? 'Comprando...' : 'Confirmar Compra'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </Motion>
+        </div>
+      )}
+
+      {/* Modal de Detalhes */}
+      {showDetailsModal && selectedItemForDetails && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <Motion
+            defaultStyle={{ opacity: 0, scale: 0.9 }}
+            style={{ opacity: spring(1), scale: spring(1) }}
+          >
+            {(style) => (
+              <div
+                className="bg-gradient-to-br from-stone-800 to-stone-900 border-2 border-yellow-700/60 rounded-xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+                style={{ opacity: style.opacity, transform: `scale(${style.scale})` }}
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-amber-300 mb-2">{selectedItemForDetails.name}</h2>
+                    <p className="text-amber-100/70 text-sm">
+                      {selectedItemForDetails.type === 'weapon' && '⚔️ Arma'}
+                      {selectedItemForDetails.type === 'armor' && '🛡️ Armadura'}
+                      {selectedItemForDetails.type === 'consumable' && '⚡ Consumível'}
+                      {selectedItemForDetails.type === 'other' && '✨ Especial'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowDetailsModal(false)}
+                    className="text-amber-300 hover:text-amber-200 text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="bg-stone-700/40 border border-yellow-700/30 rounded-lg p-6 mb-6 space-y-4">
+                  {/* Raridade */}
+                  <div>
+                    <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold ${
+                      selectedItemForDetails.rarity === 'common' ? 'bg-stone-700/50 text-stone-300' :
+                      selectedItemForDetails.rarity === 'uncommon' ? 'bg-emerald-700/50 text-emerald-300' :
+                      selectedItemForDetails.rarity === 'rare' ? 'bg-blue-700/50 text-blue-300' :
+                      selectedItemForDetails.rarity === 'epic' ? 'bg-purple-700/50 text-purple-300' :
+                      'bg-yellow-700/50 text-yellow-300'
+                    }`}>
+                      {selectedItemForDetails.rarity === 'common' && '⚪ Comum'}
+                      {selectedItemForDetails.rarity === 'uncommon' && '🟢 Incomum'}
+                      {selectedItemForDetails.rarity === 'rare' && '🔵 Raro'}
+                      {selectedItemForDetails.rarity === 'epic' && '🟣 Épico'}
+                      {selectedItemForDetails.rarity === 'legendary' && '⭐ Lendário'}
+                    </span>
+                  </div>
+
+                  {/* Descrição */}
+                  <div>
+                    <p className="text-amber-100/70 text-sm font-semibold mb-2">Descrição</p>
+                    <p className="text-gray-200 text-sm leading-relaxed">{selectedItemForDetails.description}</p>
+                  </div>
+
+                  {/* Efeito */}
+                  {selectedItemForDetails.effect && (
+                    <div className="border-t border-yellow-700/20 pt-4">
+                      <p className="text-amber-100/70 text-sm font-semibold mb-2">Efeito Especial</p>
+                      <p className="text-yellow-300 text-sm">{selectedItemForDetails.effect}</p>
+                    </div>
+                  )}
+
+                  {/* Estatísticas */}
+                  {(selectedItemForDetails.damage || selectedItemForDetails.defense) && (
+                    <div className="border-t border-yellow-700/20 pt-4 space-y-2">
+                      {selectedItemForDetails.damage && (
+                        <div className="flex items-center gap-3">
+                          <Sword className="w-5 h-5 text-red-400" />
+                          <div>
+                            <p className="text-red-400 text-sm font-semibold">Dano</p>
+                            <p className="text-gray-300">{selectedItemForDetails.damage}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedItemForDetails.defense && (
+                        <div className="flex items-center gap-3">
+                          <Shield className="w-5 h-5 text-blue-400" />
+                          <div>
+                            <p className="text-blue-400 text-sm font-semibold">Defesa</p>
+                            <p className="text-gray-300">{selectedItemForDetails.defense}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Preço e Estoque */}
+                  <div className="border-t border-yellow-700/20 pt-4 grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-amber-100/70 text-sm font-semibold mb-1">Preço</p>
+                      <div className="flex items-center gap-2">
+                        <Coins className="w-5 h-5 text-yellow-400" />
+                        <p className="text-yellow-300 text-lg font-bold">{selectedItemForDetails.price}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-amber-100/70 text-sm font-semibold mb-1">Estoque</p>
+                      <p className={`text-lg font-bold ${selectedItemForDetails.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {selectedItemForDetails.stock > 0 ? `${selectedItemForDetails.stock} disponível` : 'Esgotado'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDetailsModal(false)}
+                    className="flex-1 bg-stone-700/60 hover:bg-stone-700 text-amber-100 px-6 py-3 rounded-lg font-bold transition border border-yellow-700/40"
+                  >
+                    Fechar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      handleBuyItem(selectedItemForDetails.id);
+                    }}
+                    disabled={selectedItemForDetails.stock <= 0 || (profile && profile.gold < selectedItemForDetails.price)}
+                    className={`flex-1 px-6 py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+                      selectedItemForDetails.stock > 0 && profile && profile.gold >= selectedItemForDetails.price
+                        ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500'
+                        : 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
+                    }`}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Comprar Agora
                   </button>
                 </div>
               </div>
