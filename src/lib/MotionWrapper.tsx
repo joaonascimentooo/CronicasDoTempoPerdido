@@ -36,7 +36,7 @@ const springConfigToTransition = (config: SpringConfig = {}) => {
 export const Motion = React.forwardRef<HTMLDivElement, MotionProps>(
   ({ defaultStyle, style, children }, ref) => {
     // Extract values and animation config
-    const animate: Record<string, any> = {};
+    const animate: Record<string, number> = {};
     let springConfig: SpringConfig = {};
 
     for (const key in style) {
