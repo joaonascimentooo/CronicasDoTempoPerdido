@@ -110,8 +110,8 @@ export default function ShopItemsManagement() {
       type: 'weapon',
       rarity: 'common',
       price: 0,
-      damage: 0,
-      defense: 0,
+      damage: '',
+      defense: '',
       effect: '',
     });
   };
