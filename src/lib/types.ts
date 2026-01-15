@@ -40,8 +40,8 @@ export interface Item {
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   description: string;
   quantity: number;
-  damage?: number; // Para armas
-  defense?: number; // Para armaduras
+  damage?: string; // Notação RPG: 1d6, 2d8, etc
+  defense?: string; // Notação RPG: 1d4, 1d6, etc
 }
 
 export interface Skill {

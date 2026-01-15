@@ -6,9 +6,10 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, isMasterEmail, getMasterCharacters } from '@/lib/profileService';
 import { getAllTeams } from '@/lib/teamService';
-import { UserProfile, Team } from '@/lib/types';
+import { UserProfile, Team, Item } from '@/lib/types';
 import { Motion, spring } from '@/lib/MotionWrapper';
 import Link from 'next/link';
+import { Sword, Shield, Zap, Wand2 } from 'lucide-react';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -262,6 +263,152 @@ export default function ProfilePage() {
           </div>
         </section>
       )}
+
+      {/* Inventory Section */}
+      <section className="w-full py-24 px-6 bg-slate-900 flex justify-center">
+        <div className="w-full max-w-6xl">
+          <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
+            {(style) => (
+              <div className="text-center mb-16" style={{ opacity: style.opacity }}>
+                <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  Seu Inventário
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+              </div>
+            )}
+          </Motion>
+
+          {profile.inventory && profile.inventory.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {profile.inventory.map((item: Item, index: number) => {
+                const getRarityColor = (rarity: string) => {
+                  switch (rarity) {
+                    case 'common': return 'text-stone-400';
+                    case 'uncommon': return 'text-emerald-400';
+                    case 'rare': return 'text-blue-400';
+                    case 'epic': return 'text-purple-400';
+                    case 'legendary': return 'text-yellow-400';
+                    default: return 'text-gray-400';
+                  }
+                };
+
+                const getRarityBg = (rarity: string) => {
+                  switch (rarity) {
+                    case 'common': return 'bg-stone-900/40';
+                    case 'uncommon': return 'bg-emerald-900/20';
+                    case 'rare': return 'bg-blue-900/20';
+                    case 'epic': return 'bg-purple-900/20';
+                    case 'legendary': return 'bg-yellow-900/20';
+                    default: return 'bg-slate-900/40';
+                  }
+                };
+
+                const getItemIcon = (type: string) => {
+                  switch (type) {
+                    case 'weapon':
+                      return <Sword className="w-5 h-5" />;
+                    case 'armor':
+                      return <Shield className="w-5 h-5" />;
+                    case 'consumable':
+                      return <Zap className="w-5 h-5" />;
+                    default:
+                      return <Wand2 className="w-5 h-5" />;
+                  }
+                };
+
+                return (
+                  <Motion
+                    key={item.id}
+                    defaultStyle={{ opacity: 0, y: 20 }}
+                    style={{ opacity: spring(1, { delay: 300 + index * 50 }), y: spring(0, { delay: 300 + index * 50 }) }}
+                  >
+                    {(style) => (
+                      <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
+                        <div
+                          className={`${getRarityBg(item.rarity)} border-2 border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition`}
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-slate-700/60 rounded-lg text-orange-400">
+                                {getItemIcon(item.type)}
+                              </div>
+                              <div>
+                                <h4 className={`font-bold text-lg ${getRarityColor(item.rarity)}`}>
+                                  {item.name}
+                                </h4>
+                                <p className="text-xs text-gray-400 capitalize font-medium">
+                                  {item.type === 'weapon' && 'Arma'}
+                                  {item.type === 'armor' && 'Armadura'}
+                                  {item.type === 'consumable' && 'Consumível'}
+                                  {item.type === 'quest' && 'Quest'}
+                                  {item.type === 'other' && 'Especial'}
+                                </p>
+                              </div>
+                            </div>
+                            <span className="text-xs font-bold text-orange-400 bg-slate-700/60 px-2 py-1 rounded">
+                              x{item.quantity}
+                            </span>
+                          </div>
+
+                          <p className="text-gray-300 text-sm mb-4 line-clamp-2">{item.description}</p>
+
+                          <div className="mb-4 space-y-1">
+                            {item.damage && (
+                              <p className="text-red-400 text-sm font-medium">
+                                <Sword className="w-4 h-4 inline mr-2" />
+                                Dano: <strong>{item.damage}</strong>
+                              </p>
+                            )}
+                            {item.defense && (
+                              <p className="text-blue-400 text-sm font-medium">
+                                <Shield className="w-4 h-4 inline mr-2" />
+                                Defesa: <strong>{item.defense}</strong>
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="pt-4 border-t border-orange-500/20">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                              item.rarity === 'common' ? 'bg-stone-700/50 text-stone-300' :
+                              item.rarity === 'uncommon' ? 'bg-emerald-700/50 text-emerald-300' :
+                              item.rarity === 'rare' ? 'bg-blue-700/50 text-blue-300' :
+                              item.rarity === 'epic' ? 'bg-purple-700/50 text-purple-300' :
+                              'bg-yellow-700/50 text-yellow-300'
+                            }`}>
+                              {item.rarity === 'common' && 'Comum'}
+                              {item.rarity === 'uncommon' && 'Incomum'}
+                              {item.rarity === 'rare' && 'Raro'}
+                              {item.rarity === 'epic' && 'Épico'}
+                              {item.rarity === 'legendary' && 'Lendário'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Motion>
+                );
+              })}
+            </div>
+          ) : (
+            <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 300 }), y: spring(0, { delay: 300 }) }}>
+              {(style) => (
+                <div
+                  className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-orange-500/30 rounded-xl p-12 text-center"
+                  style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
+                >
+                  <p className="text-gray-400 text-lg mb-4">Seu inventário está vazio</p>
+                  <Link
+                    href="/shop"
+                    className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105"
+                  >
+                    Ir para a Loja
+                  </Link>
+                </div>
+              )}
+            </Motion>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
