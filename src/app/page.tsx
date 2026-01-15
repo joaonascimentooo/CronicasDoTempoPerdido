@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { Motion, spring } from '@/lib/MotionWrapper';
-import { Search, Radio, BookOpen, Settings } from 'lucide-react';
+import { Search, Radio, BookOpen, Settings, ShoppingCart } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 
 export default function Home() {
   const { ref: introRef, isInView: introIsInView } = useInView();
   const { ref: responsabilitiesRef, isInView: responsabilitiesIsInView } = useInView();
+  const { ref: shopRef, isInView: shopIsInView } = useInView();
   return (
     <div className="w-full min-h-screen">
       <section className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative">
@@ -133,6 +134,77 @@ export default function Home() {
                 )}
               </Motion>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 bg-slate-800/50 flex justify-center relative overflow-hidden" ref={shopRef}>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>
+        </div>
+        
+        <div className="relative z-10 w-full max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Imagem */}
+            <Motion defaultStyle={{ opacity: 0, x: -50 }} style={{ opacity: shopIsInView ? spring(1) : spring(0), x: shopIsInView ? spring(0) : spring(-50) }}>
+              {(style) => (
+                <div 
+                  className="relative rounded-xl overflow-hidden shadow-2xl shadow-orange-500/30 border border-orange-500/50 group"
+                  style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}
+                >
+                  <img 
+                    src="/shop/tavern.png" 
+                    alt="Taberna do Alquimista" 
+                    className="w-full h-auto object-cover transform group-hover:scale-110 transition duration-500"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"></div>
+                </div>
+              )}
+            </Motion>
+
+            {/* Conteúdo */}
+            <Motion defaultStyle={{ opacity: 0, x: 50 }} style={{ opacity: shopIsInView ? spring(1) : spring(0), x: shopIsInView ? spring(0) : spring(50) }}>
+              {(style) => (
+                <div style={{ opacity: style.opacity, transform: `translateX(${style.x}px)` }}>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
+                    Taberna do <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500">Silas</span>
+                  </h2>
+                  <p className="text-gray-300 text-base sm:text-lg mb-6 leading-relaxed">
+                    &ldquo;Bem-vindo à Taberna do Alquimista. Aqui você encontra os itens mais raros e poderosos para sua jornada. Cada objeto foi cuidadosamente selecionado para os Vigias mais corajosos.&rdquo;
+                  </p>
+                  <p className="text-gray-400 text-base mb-8">
+                    Desde armas lendárias até poções mágicas, tudo o que você precisa para se fortalecer está aqui. Visite nosso estabelecimento e adquira os melhores equipamentos da região.
+                  </p>
+                  
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-300">⚔️ Armas épicas e lendárias</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-300">🛡️ Armaduras protegidas por magia</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-300">🧪 Poções e elixires raros</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-300">✨ Artefatos antigos e misteriosos</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/shop"
+                    className="inline-flex items-center gap-2 bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg hover:shadow-orange-600/50"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    Entrar na Loja
+                  </Link>
+                </div>
+              )}
+            </Motion>
           </div>
         </div>
       </section>

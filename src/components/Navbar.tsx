@@ -60,6 +60,9 @@ export default function Navbar() {
                 <Link href="/team" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
                   Equipe
                 </Link>
+                <Link href="/shop" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
+                  Loja
+                </Link>
                 <Link href="/profile" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
                   Meu Perfil
                 </Link>
@@ -132,6 +135,13 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                 >
                   Equipe
+                </Link>
+                <Link 
+                  href="/shop" 
+                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Loja
                 </Link>
                 <Link 
                   href="/profile" 
