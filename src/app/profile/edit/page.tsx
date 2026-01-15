@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile, updateUserProfile, deleteUserProfile } from '@/lib/profileService';
@@ -210,9 +211,11 @@ export default function EditProfile() {
                   {formData.imageUrl && (
                     <div className="mt-4">
                       <p className="text-sm text-gray-400 mb-3">Preview do avatar:</p>
-                      <img
+                      <Image
                         src={formData.imageUrl}
                         alt="Avatar preview"
+                        width={256}
+                        height={256}
                         className="max-w-xs max-h-64 rounded-lg border border-orange-500/30 object-cover"
                       />
                     </div>
