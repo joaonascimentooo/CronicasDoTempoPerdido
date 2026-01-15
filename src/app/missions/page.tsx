@@ -6,15 +6,13 @@ import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile } from '@/lib/profileService';
 import { getAvailableMissions, acceptMission, getUserAcceptedMissions } from '@/lib/missionService';
-import { UserProfile, Mission } from '@/lib/types';
-import Link from 'next/link';
+import { Mission } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 import { Zap } from 'lucide-react';
 
 export default function MissionsPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [availableMissions, setAvailableMissions] = useState<Mission[]>([]);
   const [acceptedMissions, setAcceptedMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,10 +34,7 @@ export default function MissionsPage() {
 
   const loadMissions = async (userId: string) => {
     try {
-      const userProfile = await getUserProfile(userId);
-      if (userProfile) {
-        setProfile(userProfile);
-      }
+      await getUserProfile(userId);
 
       const available = await getAvailableMissions();
       setAvailableMissions(available);
