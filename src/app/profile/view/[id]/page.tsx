@@ -43,7 +43,7 @@ export default function ViewProfilePage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-xl text-orange-400 font-bold">Carregando perfil...</div>
       </div>
     );
@@ -51,7 +51,7 @@ export default function ViewProfilePage() {
 
   if (error || !profile) {
     return (
-      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-red-400 font-bold mb-4">{error || 'Perfil não encontrado'}</p>
           <Link href="/ranking" className="text-orange-400 hover:text-orange-300 underline">
@@ -63,7 +63,7 @@ export default function ViewProfilePage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 px-6">
+    <div className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 py-12 px-6">
       <div className="w-full max-w-6xl mx-auto">
         {/* Back Button */}
         <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 0 }) }}>
@@ -79,7 +79,7 @@ export default function ViewProfilePage() {
         </Motion>
 
         {/* Hero Section */}
-        <section className="w-full py-12 px-6 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-orange-500/30 mb-8">
+        <section className="w-full py-12 px-6 bg-linear-to-br from-slate-800 to-slate-900 rounded-xl border border-orange-500/30 mb-8">
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 100 }), y: spring(0, { delay: 100 }) }}>
             {(style) => (
               <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="flex flex-col md:flex-row items-center gap-8">
@@ -92,7 +92,7 @@ export default function ViewProfilePage() {
                       className="w-32 h-32 rounded-lg object-cover border-2 border-orange-500/50"
                     />
                   ) : (
-                    <div className="w-32 h-32 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center text-4xl font-bold text-white border-2 border-orange-500/50">
+                    <div className="w-32 h-32 bg-linear-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center text-4xl font-bold text-white border-2 border-orange-500/50">
                       {profile.username.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -100,7 +100,7 @@ export default function ViewProfilePage() {
 
                 {/* Info */}
                 <div className="flex-1 text-center md:text-left">
-                  <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-2">
+                  <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500 mb-2">
                     {profile.username}
                   </h1>
                   <p className={`text-2xl font-bold mb-4 ${profile.isDeceased ? 'text-red-400' : 'text-orange-400'}`}>
@@ -138,7 +138,7 @@ export default function ViewProfilePage() {
             {(style) => (
               <section 
                 style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                className="w-full py-8 px-6 bg-gradient-to-br from-red-950/50 to-red-900/30 rounded-xl border border-red-600/50 mb-8"
+                className="w-full py-8 px-6 bg-linear-to-br from-red-950/50 to-red-900/30 rounded-xl border border-red-600/50 mb-8"
               >
                 <div className="text-center">
                   <p className="text-4xl mb-4">💀</p>
@@ -156,15 +156,15 @@ export default function ViewProfilePage() {
         )}
 
         {/* Stats Section */}
-        <section className="w-full py-12 px-6 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center mb-8">
+        <section className="w-full py-12 px-6 bg-linear-to-b from-slate-900 to-slate-800 flex justify-center mb-8">
           <div className="w-full max-w-6xl">
             <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 300 }) }}>
               {(style) => (
                 <div className="text-center mb-16" style={{ opacity: style.opacity }}>
-                  <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                  <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500 mb-4">
                     Suas Estatísticas
                   </h2>
-                  <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto"></div>
+                  <div className="w-24 h-1 bg-linear-to-r from-orange-400 to-orange-500 mx-auto"></div>
                 </div>
               )}
             </Motion>
@@ -183,7 +183,7 @@ export default function ViewProfilePage() {
                 >
                   {(style) => (
                     <div
-                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition"
+                      className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition"
                       style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                     >
                       <p className="text-gray-400 text-sm mb-2">{stat.label}</p>
