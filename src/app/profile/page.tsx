@@ -9,13 +9,14 @@ import { getAllTeams } from '@/lib/teamService';
 import { UserProfile, Team, Item } from '@/lib/types';
 import { Motion, spring } from '@/lib/MotionWrapper';
 import Link from 'next/link';
-import { Sword, Shield, Zap, Wand2 } from 'lucide-react';
+import { Sword, Shield, Zap, Wand2, Trash2 } from 'lucide-react';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userTeam, setUserTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -67,6 +68,40 @@ export default function ProfilePage() {
 
     return () => unsubscribe();
   }, [router]);
+
+  const handleDeleteInventoryItem = async (itemName: string) => {
+    if (!profile || !user) return;
+
+    if (!confirm(`Tem certeza que deseja deletar ${itemName}?`)) return;
+
+    try {
+      setDeletingItemId(itemName);
+
+      // Remover item do inventário
+      const updatedInventory = profile.inventory?.filter(item => item.name !== itemName) || [];
+
+      // Atualizar no Firestore
+      const { doc, updateDoc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+
+      const userRef = doc(db, 'profiles', profile.id);
+      await updateDoc(userRef, {
+        inventory: updatedInventory,
+        updatedAt: new Date(),
+      });
+
+      // Atualizar estado local
+      setProfile({
+        ...profile,
+        inventory: updatedInventory,
+      });
+    } catch (error) {
+      console.error('Erro ao deletar item:', error);
+      alert('Erro ao deletar item');
+    } finally {
+      setDeletingItemId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -367,7 +402,7 @@ export default function ProfilePage() {
                             )}
                           </div>
 
-                          <div className="pt-4 border-t border-orange-500/20">
+                          <div className="pt-4 border-t border-orange-500/20 flex items-center justify-between">
                             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
                               item.rarity === 'common' ? 'bg-stone-700/50 text-stone-300' :
                               item.rarity === 'uncommon' ? 'bg-emerald-700/50 text-emerald-300' :
@@ -381,6 +416,14 @@ export default function ProfilePage() {
                               {item.rarity === 'epic' && 'Épico'}
                               {item.rarity === 'legendary' && 'Lendário'}
                             </span>
+                            <button
+                              onClick={() => handleDeleteInventoryItem(item.name)}
+                              disabled={deletingItemId === item.name}
+                              className="p-2 bg-red-600/40 hover:bg-red-600/60 text-red-300 rounded-lg transition disabled:opacity-50"
+                              title="Deletar item"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
                       </div>

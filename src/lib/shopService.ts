@@ -106,26 +106,45 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
     
     const userData = userDoc.data();
     const currentGold = userData.gold || 0;
+    const currentInventory = userData.inventory || [];
     
     if (currentGold < item.price) {
       throw new Error('Ouro insuficiente');
     }
 
-    const inventoryItem: Item = {
-      id: `${itemId}-${Date.now()}`,
-      name: item.name,
-      type: item.type,
-      rarity: item.rarity,
-      description: item.description,
-      quantity: item.quantity || 1,
-      damage: item.damage,
-      defense: item.defense,
-    };
+    // Procurar item existente no inventário
+    const existingItemIndex = currentInventory.findIndex(
+      (invItem: Item) => invItem.name === item.name && invItem.type === item.type && invItem.rarity === item.rarity
+    );
+
+    let updatedInventory;
+
+    if (existingItemIndex !== -1) {
+      // Item já existe, incrementar quantidade
+      updatedInventory = [...currentInventory];
+      updatedInventory[existingItemIndex] = {
+        ...updatedInventory[existingItemIndex],
+        quantity: (updatedInventory[existingItemIndex].quantity || 1) + 1,
+      };
+    } else {
+      // Novo item
+      const inventoryItem: Item = {
+        id: itemId,
+        name: item.name,
+        type: item.type,
+        rarity: item.rarity,
+        description: item.description,
+        quantity: 1,
+        damage: item.damage,
+        defense: item.defense,
+      };
+      updatedInventory = [...currentInventory, inventoryItem];
+    }
 
     // Atualizar perfil do usuário
     await updateDoc(userRef, {
       gold: currentGold - item.price,
-      inventory: arrayUnion(inventoryItem),
+      inventory: updatedInventory,
       updatedAt: new Date(),
     });
 
