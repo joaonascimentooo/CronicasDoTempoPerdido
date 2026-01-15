@@ -263,6 +263,20 @@ export default function MasterPage() {
             )}
           </Motion>
 
+          {/* Quick Access Links */}
+          <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 50 }), y: spring(0, { delay: 50 }) }}>
+            {(style) => (
+              <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mb-8 px-2 sm:px-0">
+                <Link
+                  href="/master/shop-items"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white px-6 py-3 rounded-lg font-bold transition transform hover:scale-105 border border-yellow-500"
+                >
+                  ✨ Gerenciar Itens da Loja
+                </Link>
+              </div>
+            )}
+          </Motion>
+
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 px-2 sm:px-0">
             {/* Character List */}

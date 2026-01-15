@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { Item } from '@/lib/types';
 
 export interface ShopItem {
@@ -13,182 +13,87 @@ export interface ShopItem {
   damage?: number;
   defense?: number;
   imageUrl?: string;
-  effect?: string; // Descrição de efeito especial
+  effect?: string;
+  createdBy?: string;
+  createdAt?: Date;
 }
 
-const shopItemsData: ShopItem[] = [
-  // Armas
-  {
-    id: 'sword-iron',
-    name: 'Espada de Ferro',
-    description: 'Uma espada comum feita de ferro puro',
-    type: 'weapon',
-    rarity: 'common',
-    price: 100,
-    damage: 5,
-    effect: 'Dano: +5'
-  },
-  {
-    id: 'sword-steel',
-    name: 'Espada de Aço',
-    description: 'Uma arma bem equilibrada forjada em aço fino',
-    type: 'weapon',
-    rarity: 'uncommon',
-    price: 250,
-    damage: 8,
-    effect: 'Dano: +8'
-  },
-  {
-    id: 'dagger-venom',
-    name: 'Punhal Envenenado',
-    description: 'Lâmina fina untada com veneno paralisante',
-    type: 'weapon',
-    rarity: 'rare',
-    price: 500,
-    damage: 6,
-    effect: 'Paralisa inimigos por 2 turnos'
-  },
-  {
-    id: 'staff-arcane',
-    name: 'Cajado Arcano',
-    description: 'Uma varinha antiga que canaliza a magia primordial',
-    type: 'weapon',
-    rarity: 'epic',
-    price: 1500,
-    damage: 10,
-    effect: 'Aumenta Inteligência em +3, Dano Mágico: +15'
-  },
-  
-  // Armaduras
-  {
-    id: 'armor-leather',
-    name: 'Armadura de Couro',
-    description: 'Proteção leve e flexível',
-    type: 'armor',
-    rarity: 'common',
-    price: 150,
-    defense: 3,
-    effect: 'Defesa: +3'
-  },
-  {
-    id: 'armor-chain',
-    name: 'Armadura de Malha',
-    description: 'Proteção sólida em forma de anéis metálicos',
-    type: 'armor',
-    rarity: 'uncommon',
-    price: 350,
-    defense: 6,
-    effect: 'Defesa: +6'
-  },
-  {
-    id: 'armor-plate',
-    name: 'Armadura de Placas',
-    description: 'Proteção pesada e resistente',
-    type: 'armor',
-    rarity: 'rare',
-    price: 800,
-    defense: 10,
-    effect: 'Defesa: +10'
-  },
-  {
-    id: 'armor-mystical',
-    name: 'Armadura Mística',
-    description: 'Feita de um material raro que absorve magia',
-    type: 'armor',
-    rarity: 'epic',
-    price: 2000,
-    defense: 12,
-    effect: 'Defesa: +12, Resistência Mágica: +20%'
-  },
-
-  // Consumíveis
-  {
-    id: 'potion-health-small',
-    name: 'Poção de Cura Menor',
-    description: 'Recupera 30 pontos de vida',
-    type: 'consumable',
-    rarity: 'common',
-    price: 50,
-    quantity: 1,
-    effect: 'Cura: +30 HP'
-  },
-  {
-    id: 'potion-health-medium',
-    name: 'Poção de Cura',
-    description: 'Recupera 80 pontos de vida',
-    type: 'consumable',
-    rarity: 'uncommon',
-    price: 120,
-    quantity: 1,
-    effect: 'Cura: +80 HP'
-  },
-  {
-    id: 'potion-mana',
-    name: 'Frasco de Mana',
-    description: 'Restaura 50 pontos de mana',
-    type: 'consumable',
-    rarity: 'uncommon',
-    price: 150,
-    quantity: 1,
-    effect: 'Recupera: +50 Mana'
-  },
-  {
-    id: 'potion-strength',
-    name: 'Elixir da Força',
-    description: 'Aumenta força em +5 por 10 minutos',
-    type: 'consumable',
-    rarity: 'rare',
-    price: 300,
-    quantity: 1,
-    effect: 'Força: +5 (10 min)'
-  },
-  {
-    id: 'potion-invincibility',
-    name: 'Poção da Invencibilidade',
-    description: 'Torna o usuário invulnerável por 1 minuto',
-    type: 'consumable',
-    rarity: 'epic',
-    price: 1000,
-    quantity: 1,
-    effect: 'Invulnerabilidade: 60s'
-  },
-
-  // Itens especiais
-  {
-    id: 'crystal-mana',
-    name: 'Cristal de Mana',
-    description: 'Uma gema brilhante que contém energia mágica pura',
-    type: 'other',
-    rarity: 'rare',
-    price: 400,
-    effect: 'Componente alquímico'
-  },
-  {
-    id: 'rune-strength',
-    name: 'Runa de Força',
-    description: 'Uma runa antiga que concede poder bruto',
-    type: 'other',
-    rarity: 'epic',
-    price: 750,
-    effect: 'Aumenta Força permanentemente em +2'
-  },
-];
-
+// Obter todos os itens da loja
 export async function getShopItems(): Promise<ShopItem[]> {
-  return shopItemsData;
+  try {
+    const shopCollection = collection(db, 'shopItems');
+    const snapshot = await getDocs(shopCollection);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as ShopItem[];
+  } catch (error) {
+    console.error('Erro ao obter itens da loja:', error);
+    return [];
+  }
 }
 
+// Obter um item específico
 export async function getShopItem(itemId: string): Promise<ShopItem | null> {
-  return shopItemsData.find(item => item.id === itemId) || null;
+  try {
+    const items = await getShopItems();
+    return items.find(item => item.id === itemId) || null;
+  } catch (error) {
+    console.error('Erro ao obter item:', error);
+    return null;
+  }
 }
 
+// Adicionar novo item à loja
+export async function addShopItem(item: Omit<ShopItem, 'id'>, userId: string): Promise<string> {
+  try {
+    const shopCollection = collection(db, 'shopItems');
+    const docRef = await addDoc(shopCollection, {
+      ...item,
+      createdBy: userId,
+      createdAt: new Date(),
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Erro ao adicionar item:', error);
+    throw error;
+  }
+}
+
+// Atualizar item da loja
+export async function updateShopItem(itemId: string, updates: Partial<ShopItem>): Promise<void> {
+  try {
+    const itemRef = doc(db, 'shopItems', itemId);
+    await updateDoc(itemRef, {
+      ...updates,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar item:', error);
+    throw error;
+  }
+}
+
+// Deletar item da loja
+export async function deleteShopItem(itemId: string): Promise<void> {
+  try {
+    const itemRef = doc(db, 'shopItems', itemId);
+    await deleteDoc(itemRef);
+  } catch (error) {
+    console.error('Erro ao deletar item:', error);
+    throw error;
+  }
+}
+
+// Comprar item
 export async function buyItem(userId: string, itemId: string, profileId: string): Promise<boolean> {
   try {
     const item = await getShopItem(itemId);
     if (!item) return false;
 
     const userRef = doc(db, 'profiles', profileId);
-    const userDoc = await (await import('firebase/firestore')).getDoc(userRef);
+    const { getDoc } = await import('firebase/firestore');
+    const userDoc = await getDoc(userRef);
     
     if (!userDoc.exists()) return false;
     
@@ -199,7 +104,6 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
       throw new Error('Ouro insuficiente');
     }
 
-    // Criar item do inventário
     const inventoryItem: Item = {
       id: `${itemId}-${Date.now()}`,
       name: item.name,
@@ -211,7 +115,6 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
       defense: item.defense,
     };
 
-    // Atualizar perfil do usuário
     await updateDoc(userRef, {
       gold: currentGold - item.price,
       inventory: arrayUnion(inventoryItem),
