@@ -20,6 +20,9 @@ export default function ShopPage() {
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [showShop, setShowShop] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [selectedItemForBuy, setSelectedItemForBuy] = useState<ShopItem | null>(null);
+  const [buyQuantity, setBuyQuantity] = useState(1);
 
   useEffect(() => {
     const loadData = async () => {
@@ -45,33 +48,56 @@ export default function ShopPage() {
     ? items.filter(item => item.stock > 0)
     : items.filter(item => item.type === selectedCategory && item.stock > 0);
 
-  const handleBuyItem = async (itemId: string) => {
+  const handleBuyItem = (itemId: string) => {
     if (!user || !profile) return;
 
-    setBuyingItem(itemId);
     const item = items.find(i => i.id === itemId);
     
     if (!item) {
       setMessage({ text: 'Item não encontrado', type: 'error' });
-      setBuyingItem(null);
       return;
     }
 
-    if (profile.gold < item.price) {
-      setMessage({ text: 'Ouro insuficiente!', type: 'error' });
-      setBuyingItem(null);
+    // Abrir modal
+    setSelectedItemForBuy(item);
+    setBuyQuantity(1);
+    setShowBuyModal(true);
+  };
+
+  const handleConfirmBuy = async () => {
+    if (!user || !profile || !selectedItemForBuy) return;
+
+    const totalPrice = selectedItemForBuy.price * buyQuantity;
+
+    if (profile.gold < totalPrice) {
+      setMessage({ text: `Ouro insuficiente! Faltam ${totalPrice - profile.gold}`, type: 'error' });
       return;
     }
 
     try {
-      const success = await buyItem(user.uid, itemId, profile.id);
-      if (success) {
-        setMessage({ text: `${item.name} comprado com sucesso!`, type: 'success' });
-        // Atualizar ouro
-        setProfile({ ...profile, gold: profile.gold - item.price });
-      } else {
-        setMessage({ text: 'Erro ao comprar item', type: 'error' });
+      setBuyingItem(selectedItemForBuy.id);
+      
+      // Comprar múltiplas unidades
+      for (let i = 0; i < buyQuantity; i++) {
+        const success = await buyItem(user.uid, selectedItemForBuy.id, profile.id);
+        if (!success) {
+          throw new Error('Erro ao comprar item');
+        }
       }
+
+      setMessage({ 
+        text: `${buyQuantity}x ${selectedItemForBuy.name} comprado${buyQuantity > 1 ? 's' : ''} com sucesso!`, 
+        type: 'success' 
+      });
+      
+      // Atualizar ouro
+      setProfile({ ...profile, gold: profile.gold - totalPrice });
+      
+      // Fechar modal e recarregar itens
+      setShowBuyModal(false);
+      setSelectedItemForBuy(null);
+      const updatedItems = await getShopItems();
+      setItems(updatedItems);
     } catch (error) {
       setMessage({ text: 'Erro ao comprar item', type: 'error' });
     } finally {
@@ -414,6 +440,109 @@ export default function ShopPage() {
           )}
         </main>
       </div>
+
+      {/* Modal de Compra */}
+      {showBuyModal && selectedItemForBuy && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <Motion
+            defaultStyle={{ opacity: 0, scale: 0.9 }}
+            style={{ opacity: spring(1), scale: spring(1) }}
+          >
+            {(style) => (
+              <div
+                className="bg-gradient-to-br from-stone-800 to-stone-900 border-2 border-yellow-700/60 rounded-xl p-8 max-w-md w-full shadow-2xl"
+                style={{ opacity: style.opacity, transform: `scale(${style.scale})` }}
+              >
+                <h2 className="text-2xl font-bold text-amber-300 mb-2">{selectedItemForBuy.name}</h2>
+                <p className="text-amber-100/70 text-sm mb-6">{selectedItemForBuy.description}</p>
+
+                <div className="bg-stone-700/40 border border-yellow-700/30 rounded-lg p-4 mb-6 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-amber-100">Preço por unidade:</span>
+                    <div className="flex items-center gap-2">
+                      <Coins className="w-4 h-4 text-yellow-400" />
+                      <span className="text-yellow-300 font-bold">{selectedItemForBuy.price}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-amber-100">Estoque disponível:</span>
+                    <span className="text-emerald-400 font-bold">{selectedItemForBuy.stock}</span>
+                  </div>
+
+                  <div className="border-t border-yellow-700/20 pt-3">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-amber-100">Quantidade:</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setBuyQuantity(Math.max(1, buyQuantity - 1))}
+                          className="w-8 h-8 bg-stone-600/60 hover:bg-stone-600 text-amber-300 rounded-lg font-bold transition"
+                        >
+                          −
+                        </button>
+                        <input
+                          type="number"
+                          min="1"
+                          max={selectedItemForBuy.stock}
+                          value={buyQuantity}
+                          onChange={(e) => setBuyQuantity(Math.max(1, Math.min(selectedItemForBuy.stock, Number(e.target.value))))}
+                          className="w-12 text-center bg-stone-800/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
+                        />
+                        <button
+                          onClick={() => setBuyQuantity(Math.min(selectedItemForBuy.stock, buyQuantity + 1))}
+                          className="w-8 h-8 bg-stone-600/60 hover:bg-stone-600 text-amber-300 rounded-lg font-bold transition"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-3 border-t border-yellow-700/20">
+                      <span className="text-amber-100 font-semibold">Total:</span>
+                      <div className="flex items-center gap-2">
+                        <Coins className="w-5 h-5 text-yellow-400" />
+                        <span className="text-yellow-300 font-bold text-lg">
+                          {selectedItemForBuy.price * buyQuantity}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {profile && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-amber-100/70">Seu ouro:</span>
+                      <span className={profile.gold >= selectedItemForBuy.price * buyQuantity ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
+                        {profile.gold}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowBuyModal(false)}
+                    className="flex-1 bg-stone-700/60 hover:bg-stone-700 text-amber-100 px-6 py-3 rounded-lg font-bold transition border border-yellow-700/40"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleConfirmBuy}
+                    disabled={buyingItem === selectedItemForBuy.id || (profile && profile.gold < selectedItemForBuy.price * buyQuantity)}
+                    className={`flex-1 px-6 py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+                      profile && profile.gold >= selectedItemForBuy.price * buyQuantity
+                        ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500'
+                        : 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
+                    }`}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    {buyingItem === selectedItemForBuy.id ? 'Comprando...' : 'Confirmar Compra'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </Motion>
+        </div>
+      )}
     </div>
   );
 }
