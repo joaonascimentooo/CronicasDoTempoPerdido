@@ -239,3 +239,32 @@ export async function getUserAcceptedMissions(userId: string): Promise<Mission[]
     throw error;
   }
 }
+
+// Rejeitar uma missão (remover aceitação)
+export async function rejectMission(missionId: string, userId: string): Promise<void> {
+  try {
+    const missionRef = doc(db, 'missions', missionId);
+    const missionSnap = await getDoc(missionRef);
+
+    if (!missionSnap.exists()) {
+      throw new Error('Missão não encontrada');
+    }
+
+    const mission = missionSnap.data() as Mission;
+
+    // Verificar se o usuário aceitou a missão
+    if (!mission.acceptedBy?.includes(userId)) {
+      throw new Error('Você não aceitou esta missão');
+    }
+
+    const updatedAcceptedBy = mission.acceptedBy.filter(id => id !== userId);
+
+    await updateDoc(missionRef, {
+      acceptedBy: updatedAcceptedBy,
+      updatedAt: Timestamp.now(),
+    });
+  } catch (error) {
+    console.error('Erro ao rejeitar missão:', error);
+    throw error;
+  }
+}

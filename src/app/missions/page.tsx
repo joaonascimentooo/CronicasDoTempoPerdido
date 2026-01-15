@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange } from '@/lib/authService';
 import { getUserProfile } from '@/lib/profileService';
-import { getAvailableMissions, acceptMission, getUserAcceptedMissions } from '@/lib/missionService';
+import { getAvailableMissions, acceptMission, rejectMission, getUserAcceptedMissions } from '@/lib/missionService';
 import { Mission } from '@/lib/types';
 import { Motion, spring } from 'react-motion';
 import { Zap } from 'lucide-react';
@@ -53,6 +53,18 @@ export default function MissionsPage() {
 
     try {
       await acceptMission(missionId, user.uid);
+      loadMissions(user.uid);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      alert('Erro: ' + errorMsg);
+    }
+  };
+
+  const handleRejectMission = async (missionId: string) => {
+    if (!user) return;
+
+    try {
+      await rejectMission(missionId, user.uid);
       loadMissions(user.uid);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -260,12 +272,20 @@ export default function MissionsPage() {
                       </div>
                     </div>
 
-                    <button
-                      disabled
-                      className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 text-indigo-300 font-bold py-2 px-4 rounded-lg opacity-75 cursor-not-allowed"
-                    >
-                      ✓ Missão Aceita
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedMission(mission)}
+                        className="flex-1 bg-indigo-700 hover:bg-indigo-600 text-indigo-300 hover:text-indigo-200 font-bold py-2 px-4 rounded-lg transition text-sm"
+                      >
+                        Mais Informações
+                      </button>
+                      <button
+                        onClick={() => handleRejectMission(mission.id)}
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm"
+                      >
+                        Rejeitar
+                      </button>
+                    </div>
                   </div>
                 )}
               </Motion>
@@ -372,8 +392,17 @@ export default function MissionsPage() {
                     Aceitar Missão
                   </button>
                 ) : (
-                  <div className="bg-emerald-900/30 border border-emerald-500/50 rounded-lg p-4 text-center">
-                    <p className="text-emerald-300 font-semibold">✓ Você já aceitou esta missão</p>
+                  <div className="space-y-2">
+                    <p className="text-emerald-300 font-semibold text-center">✓ Você já aceitou esta missão</p>
+                    <button
+                      onClick={() => {
+                        handleRejectMission(selectedMission.id);
+                        setSelectedMission(null);
+                      }}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-red-600/50 text-lg"
+                    >
+                      Rejeitar Missão
+                    </button>
                   </div>
                 )}
               </div>
