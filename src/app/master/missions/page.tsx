@@ -267,7 +267,7 @@ export default function MissionsManagement() {
                           value={formData.reward?.experience || 0}
                           onChange={(e) => setFormData({ 
                             ...formData, 
-                            reward: { ...formData.reward, experience: Number(e.target.value) } 
+                            reward: { experience: Number(e.target.value), gold: formData.reward?.gold || 0 } 
                           })}
                           className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
                           placeholder="0"
@@ -281,7 +281,7 @@ export default function MissionsManagement() {
                           value={formData.reward?.gold || 0}
                           onChange={(e) => setFormData({ 
                             ...formData, 
-                            reward: { ...formData.reward, gold: Number(e.target.value) } 
+                            reward: { experience: formData.reward?.experience || 0, gold: Number(e.target.value) } 
                           })}
                           className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
                           placeholder="0"
