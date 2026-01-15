@@ -228,9 +228,9 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
 export function getRarityColor(rarity: string): string {
   switch (rarity) {
     case 'common':
-      return 'text-gray-400';
+      return 'text-stone-400';
     case 'uncommon':
-      return 'text-green-400';
+      return 'text-emerald-400';
     case 'rare':
       return 'text-blue-400';
     case 'epic':
@@ -238,40 +238,40 @@ export function getRarityColor(rarity: string): string {
     case 'legendary':
       return 'text-yellow-400';
     default:
-      return 'text-white';
+      return 'text-amber-100';
   }
 }
 
 export function getRarityBg(rarity: string): string {
   switch (rarity) {
     case 'common':
-      return 'bg-gray-900';
+      return 'bg-stone-800/40';
     case 'uncommon':
-      return 'bg-green-900/20';
+      return 'bg-emerald-900/20';
     case 'rare':
       return 'bg-blue-900/20';
     case 'epic':
       return 'bg-purple-900/20';
     case 'legendary':
-      return 'bg-yellow-900/20';
+      return 'bg-yellow-900/30';
     default:
-      return 'bg-slate-900';
+      return 'bg-stone-900/40';
   }
 }
 
 export function getRarityBorder(rarity: string): string {
   switch (rarity) {
     case 'common':
-      return 'border-gray-600';
+      return 'border-stone-600';
     case 'uncommon':
-      return 'border-green-600';
+      return 'border-emerald-600/60';
     case 'rare':
-      return 'border-blue-600';
+      return 'border-blue-600/60';
     case 'epic':
-      return 'border-purple-600';
+      return 'border-purple-600/60';
     case 'legendary':
-      return 'border-yellow-600';
+      return 'border-yellow-600/60';
     default:
-      return 'border-slate-600';
+      return 'border-stone-600/50';
   }
 }

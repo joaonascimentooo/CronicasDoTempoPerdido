@@ -214,42 +214,43 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
-      {/* Background decorativo com a imagem temática */}
-      <div className="fixed inset-0 opacity-15 pointer-events-none" style={{
-        backgroundImage: 'url(data:image/svg+xml,%3Csvg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"%3E%3Crect fill="%23f59e0b" width="1024" height="1024"/%3E%3C/svg%3E)',
-        backgroundAttachment: 'fixed',
+    <div className="min-h-screen relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #3a2f28 0%, #2d1f18 50%, #3a2f28 100%)',
+    }}>
+      {/* Background com textura */}
+      <div className="fixed inset-0 opacity-20" style={{
+        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(167, 139, 250, 0.2), transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.2), transparent 50%)',
       }}></div>
 
-      {/* Decorações de luz */}
-      <div className="fixed top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="fixed bottom-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      {/* Luzes decorativas - tons quentes e mágicos */}
+      <div className="fixed top-0 left-0 w-96 h-96 bg-yellow-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="fixed bottom-0 right-0 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
       <div className="relative z-10">
         {/* Header */}
-        <header className="bg-slate-900/80 backdrop-blur border-b border-slate-700">
+        <header className="border-b border-yellow-700/30 bg-gradient-to-r from-stone-800/60 via-amber-900/40 to-stone-800/60 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 text-orange-400 hover:text-orange-300 transition">
+            <Link href="/" className="flex items-center gap-2 text-amber-300 hover:text-amber-200 transition font-semibold">
               <ArrowLeft className="w-5 h-5" />
               <span>Voltar</span>
             </Link>
             
             <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
               {(style) => (
-                <h1 className="text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-purple-400" style={{ opacity: style.opacity }}>
-                  ✨ TABERNA MÁGICA
+                <h1 className="text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-amber-300 via-yellow-300 to-amber-400" style={{ opacity: style.opacity }}>
+                  ✨ TABERNA DO SILAS
                 </h1>
               )}
             </Motion>
 
-            <div className="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-lg border border-slate-600">
+            <div className="flex items-center gap-3 bg-stone-900/60 backdrop-blur px-4 py-2 rounded-lg border border-yellow-600/40">
               <Coins className="w-5 h-5 text-yellow-400" />
-              <span className="text-yellow-400 font-bold text-lg">{profile.gold}</span>
+              <span className="text-yellow-300 font-bold text-lg">{profile.gold}</span>
             </div>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {/* Mensagem de feedback */}
           {message && (
             <Motion defaultStyle={{ opacity: 0, y: -20 }} style={{ opacity: spring(1), y: spring(0) }}>
@@ -257,8 +258,8 @@ export default function ShopPage() {
                 <div 
                   className={`mb-6 p-4 rounded-lg border ${
                     message.type === 'success' 
-                      ? 'bg-green-900/30 border-green-500 text-green-200' 
-                      : 'bg-red-900/30 border-red-500 text-red-200'
+                      ? 'bg-emerald-900/40 border-emerald-500/60 text-emerald-200' 
+                      : 'bg-rose-900/40 border-rose-500/60 text-rose-200'
                   }`}
                   style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                 >
@@ -272,11 +273,11 @@ export default function ShopPage() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1), y: spring(0) }}>
             {(style) => (
               <div 
-                className="mb-8 p-6 bg-slate-800/50 border border-orange-500/30 rounded-lg backdrop-blur"
+                className="mb-8 p-6 bg-gradient-to-r from-stone-800/40 via-amber-900/30 to-stone-800/40 border-2 border-yellow-700/40 rounded-xl backdrop-blur-sm shadow-lg"
                 style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
               >
-                <p className="text-orange-200 text-lg">
-                  &ldquo;Bem-vindo à Taberna do Alquimista. Aqui você encontra os itens mais raros e poderosos para sua jornada.
+                <p className="text-amber-100 text-lg font-light leading-relaxed">
+                  &ldquo;Bem-vindo à Taberna do Silas. Aqui você encontra os itens mais raros e poderosos para sua jornada.
                   Cada objeto foi cuidadosamente selecionado para os Vigias mais corajosos.&rdquo;
                 </p>
               </div>
@@ -287,17 +288,17 @@ export default function ShopPage() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 100 }), y: spring(0, { delay: 100 }) }}>
             {(style) => (
               <div 
-                className="mb-8 flex flex-wrap gap-2"
+                className="mb-10 flex flex-wrap gap-3"
                 style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
               >
                 {['all', 'weapon', 'armor', 'consumable', 'other'].map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category as any)}
-                    className={`px-4 py-2 rounded-lg font-semibold transition ${
+                    className={`px-5 py-3 rounded-lg font-bold text-sm transition transform hover:scale-105 ${
                       selectedCategory === category
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                        ? 'bg-linear-to-r from-yellow-600 to-amber-600 text-white shadow-lg shadow-yellow-600/40 border border-yellow-500'
+                        : 'bg-stone-700/50 border border-yellow-700/40 text-amber-100 hover:bg-stone-600/60 backdrop-blur'
                     }`}
                   >
                     {category === 'all' && '📦 Todos'}
@@ -317,24 +318,24 @@ export default function ShopPage() {
               <Motion
                 key={item.id}
                 defaultStyle={{ opacity: 0, y: 20 }}
-                style={{ opacity: spring(1, { delay: index * 50 }), y: spring(0, { delay: index * 50 }) }}
+                style={{ opacity: spring(1, { delay: index * 30 }), y: spring(0, { delay: index * 30 }) }}
               >
                 {(style) => (
                   <div
-                    className={`${getRarityBg(item.rarity)} ${getRarityBorder(item.rarity)} border-2 rounded-lg p-6 backdrop-blur transition hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 group`}
+                    className={`${getRarityBg(item.rarity)} ${getRarityBorder(item.rarity)} border-2 rounded-lg p-6 backdrop-blur-sm transition hover:scale-105 hover:shadow-2xl group`}
                     style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                   >
                     {/* Cabeçalho do item */}
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-slate-700/50 rounded-lg text-orange-400">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-stone-700/60 rounded-lg text-yellow-400">
                           {getItemIcon(item.type)}
                         </div>
                         <div>
                           <h3 className={`font-bold text-lg ${getRarityColor(item.rarity)}`}>
                             {item.name}
                           </h3>
-                          <p className="text-xs text-gray-400 capitalize">
+                          <p className="text-xs text-amber-200/70 capitalize font-medium">
                             {item.type === 'weapon' && 'Arma'}
                             {item.type === 'armor' && 'Armadura'}
                             {item.type === 'consumable' && 'Consumível'}
@@ -345,14 +346,14 @@ export default function ShopPage() {
                     </div>
 
                     {/* Descrição */}
-                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                    <p className="text-amber-100/80 text-sm mb-4 line-clamp-2 leading-relaxed">
                       {item.description}
                     </p>
 
                     {/* Efeitos */}
                     {item.effect && (
-                      <div className="mb-4 p-3 bg-slate-700/50 rounded border-l-2 border-orange-400">
-                        <p className="text-orange-200 text-sm">
+                      <div className="mb-4 p-3 bg-stone-700/40 rounded-lg border-l-2 border-yellow-500/70">
+                        <p className="text-yellow-200 text-sm font-medium">
                           <strong>Efeito:</strong> {item.effect}
                         </p>
                       </div>
@@ -360,16 +361,16 @@ export default function ShopPage() {
 
                     {/* Estatísticas */}
                     {(item.damage || item.defense) && (
-                      <div className="mb-4 space-y-1">
+                      <div className="mb-4 space-y-2">
                         {item.damage && (
-                          <p className="text-red-300 text-sm">
-                            <Sword className="w-4 h-4 inline mr-1" />
+                          <p className="text-red-400 text-sm font-medium">
+                            <Sword className="w-4 h-4 inline mr-2" />
                             Dano: <strong>+{item.damage}</strong>
                           </p>
                         )}
                         {item.defense && (
-                          <p className="text-blue-300 text-sm">
-                            <Shield className="w-4 h-4 inline mr-1" />
+                          <p className="text-blue-400 text-sm font-medium">
+                            <Shield className="w-4 h-4 inline mr-2" />
                             Defesa: <strong>+{item.defense}</strong>
                           </p>
                         )}
@@ -377,18 +378,18 @@ export default function ShopPage() {
                     )}
 
                     {/* Preço e botão */}
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+                    <div className="flex items-center justify-between pt-4 border-t border-yellow-700/30 mt-4">
                       <div className="flex items-center gap-2">
                         <Coins className="w-5 h-5 text-yellow-400" />
-                        <span className="text-yellow-400 font-bold text-lg">{item.price}</span>
+                        <span className="text-yellow-300 font-bold text-lg">{item.price}</span>
                       </div>
                       <button
                         onClick={() => handleBuyItem(item.id)}
                         disabled={buyingItem === item.id || profile.gold < item.price}
-                        className={`px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${
+                        className={`px-5 py-2 rounded-lg font-bold transition flex items-center gap-2 ${
                           profile.gold < item.price
-                            ? 'bg-slate-600 text-gray-400 cursor-not-allowed opacity-50'
-                            : 'bg-orange-500 hover:bg-orange-600 text-white cursor-pointer'
+                            ? 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
+                            : 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500 hover:shadow-lg hover:shadow-yellow-600/40'
                         }`}
                       >
                         <ShoppingCart className="w-4 h-4" />
@@ -403,7 +404,7 @@ export default function ShopPage() {
 
           {filteredItems.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">Nenhum item encontrado nesta categoria</p>
+              <p className="text-amber-200/60 text-lg">Nenhum item encontrado nesta categoria</p>
             </div>
           )}
         </main>
