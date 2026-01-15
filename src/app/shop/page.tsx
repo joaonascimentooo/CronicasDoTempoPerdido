@@ -42,8 +42,8 @@ export default function ShopPage() {
   }, [user]);
 
   const filteredItems = selectedCategory === 'all' 
-    ? items 
-    : items.filter(item => item.type === selectedCategory);
+    ? items.filter(item => item.stock > 0)
+    : items.filter(item => item.type === selectedCategory && item.stock > 0);
 
   const handleBuyItem = async (itemId: string) => {
     if (!user || !profile) return;
@@ -378,15 +378,20 @@ export default function ShopPage() {
                     )}
 
                     {/* Preço e botão */}
-                    <div className="flex items-center justify-between pt-4 border-t border-yellow-700/30 mt-4">
-                      <div className="flex items-center gap-2">
-                        <Coins className="w-5 h-5 text-yellow-400" />
-                        <span className="text-yellow-300 font-bold text-lg">{item.price}</span>
+                    <div className="pt-4 border-t border-yellow-700/30 mt-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-5 h-5 text-yellow-400" />
+                          <span className="text-yellow-300 font-bold text-lg">{item.price}</span>
+                        </div>
+                        <span className="text-xs font-bold text-amber-300 bg-stone-700/60 px-3 py-1 rounded-full">
+                          {item.stock} em estoque
+                        </span>
                       </div>
                       <button
                         onClick={() => handleBuyItem(item.id)}
                         disabled={buyingItem === item.id || profile.gold < item.price}
-                        className={`px-5 py-2 rounded-lg font-bold transition flex items-center gap-2 ${
+                        className={`w-full px-5 py-2 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
                           profile.gold < item.price
                             ? 'bg-stone-600/40 text-amber-800 cursor-not-allowed opacity-40 border border-stone-600'
                             : 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white cursor-pointer border border-yellow-500 hover:shadow-lg hover:shadow-yellow-600/40'

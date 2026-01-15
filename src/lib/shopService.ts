@@ -10,6 +10,7 @@ export interface ShopItem {
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   price: number;
   quantity?: number;
+  stock: number; // Quantidade disponível para venda
   damage?: string; // Notação RPG: 1d6, 2d8, etc
   defense?: string; // Notação RPG: 1d4, 1d6, etc
   imageUrl?: string;
@@ -91,7 +92,13 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
     const item = await getShopItem(itemId);
     if (!item) return false;
 
+    // Verificar se ainda há estoque
+    if (item.stock <= 0) {
+      throw new Error('Item sem estoque');
+    }
+
     const userRef = doc(db, 'profiles', profileId);
+    const itemRef = doc(db, 'shopItems', itemId);
     const { getDoc } = await import('firebase/firestore');
     const userDoc = await getDoc(userRef);
     
@@ -115,9 +122,16 @@ export async function buyItem(userId: string, itemId: string, profileId: string)
       defense: item.defense,
     };
 
+    // Atualizar perfil do usuário
     await updateDoc(userRef, {
       gold: currentGold - item.price,
       inventory: arrayUnion(inventoryItem),
+      updatedAt: new Date(),
+    });
+
+    // Decrementar estoque do item
+    await updateDoc(itemRef, {
+      stock: item.stock - 1,
       updatedAt: new Date(),
     });
 

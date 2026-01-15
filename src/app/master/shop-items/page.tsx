@@ -22,6 +22,7 @@ export default function ShopItemsManagement() {
     type: 'weapon',
     rarity: 'common',
     price: 0,
+    stock: 1,
     damage: '',
     defense: '',
     effect: '',
@@ -67,6 +68,7 @@ export default function ShopItemsManagement() {
         type: 'weapon',
         rarity: 'common',
         price: 0,
+        stock: 1,
         damage: '',
         defense: '',
         effect: '',
@@ -110,6 +112,7 @@ export default function ShopItemsManagement() {
       type: 'weapon',
       rarity: 'common',
       price: 0,
+      stock: 1,
       damage: '',
       defense: '',
       effect: '',
@@ -224,6 +227,18 @@ export default function ShopItemsManagement() {
                           onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                           className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
                           placeholder="0"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-amber-100 font-semibold mb-2">Estoque *</label>
+                        <input
+                          type="number"
+                          value={formData.stock || 1}
+                          onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                          className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
+                          placeholder="1"
+                          min="1"
                         />
                       </div>
 
@@ -399,7 +414,14 @@ export default function ShopItemsManagement() {
                           </div>
 
                           <div className="flex items-center justify-between pt-4 border-t border-yellow-700/30">
-                            <span className="text-yellow-300 font-bold">{item.price} ouro</span>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-yellow-300 font-bold">{item.price} ouro</span>
+                              <span className={`text-xs font-semibold ${
+                                item.stock > 0 ? 'text-emerald-400' : 'text-red-400'
+                              }`}>
+                                {item.stock > 0 ? `${item.stock} em estoque` : 'Sem estoque'}
+                              </span>
+                            </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleEdit(item)}
