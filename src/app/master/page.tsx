@@ -266,12 +266,18 @@ export default function MasterPage() {
           {/* Quick Access Links */}
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 50 }), y: spring(0, { delay: 50 }) }}>
             {(style) => (
-              <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mb-8 px-2 sm:px-0">
+              <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="mb-8 px-2 sm:px-0 flex flex-wrap gap-3">
                 <Link
                   href="/master/shop-items"
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white px-6 py-3 rounded-lg font-bold transition transform hover:scale-105 border border-yellow-500"
                 >
                   ✨ Gerenciar Itens da Loja
+                </Link>
+                <Link
+                  href="/master/missions"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-6 py-3 rounded-lg font-bold transition transform hover:scale-105 border border-blue-500"
+                >
+                  📜 Gerenciar Missões
                 </Link>
               </div>
             )}
