@@ -22,8 +22,8 @@ export default function ShopItemsManagement() {
     type: 'weapon',
     rarity: 'common',
     price: 0,
-    damage: 0,
-    defense: 0,
+    damage: '',
+    defense: '',
     effect: '',
   });
 
@@ -67,8 +67,8 @@ export default function ShopItemsManagement() {
         type: 'weapon',
         rarity: 'common',
         price: 0,
-        damage: 0,
-        defense: 0,
+        damage: '',
+        defense: '',
         effect: '',
       });
       setEditingId(null);
@@ -258,24 +258,24 @@ export default function ShopItemsManagement() {
                       </div>
 
                       <div>
-                        <label className="block text-amber-100 font-semibold mb-2">Dano</label>
+                        <label className="block text-amber-100 font-semibold mb-2">Dano (ex: 1d6, 2d8, 1d12+2)</label>
                         <input
-                          type="number"
-                          value={formData.damage || 0}
-                          onChange={(e) => setFormData({ ...formData, damage: Number(e.target.value) })}
+                          type="text"
+                          value={formData.damage || ''}
+                          onChange={(e) => setFormData({ ...formData, damage: e.target.value })}
                           className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
-                          placeholder="0"
+                          placeholder="Ex: 1d6"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-amber-100 font-semibold mb-2">Defesa</label>
+                        <label className="block text-amber-100 font-semibold mb-2">Defesa (ex: 1d4, 1d6, 2d4+1)</label>
                         <input
-                          type="number"
-                          value={formData.defense || 0}
-                          onChange={(e) => setFormData({ ...formData, defense: Number(e.target.value) })}
+                          type="text"
+                          value={formData.defense || ''}
+                          onChange={(e) => setFormData({ ...formData, defense: e.target.value })}
                           className="w-full px-4 py-2 bg-stone-900/60 border border-yellow-700/40 rounded-lg text-amber-100 focus:outline-none focus:border-yellow-500"
-                          placeholder="0"
+                          placeholder="Ex: 1d6"
                         />
                       </div>
                     </div>
@@ -391,10 +391,10 @@ export default function ShopItemsManagement() {
 
                           <div className="mb-4 space-y-1">
                             {item.damage ? (
-                              <p className="text-red-400 text-sm">Dano: +{item.damage}</p>
+                              <p className="text-red-400 text-sm">Dano: {item.damage}</p>
                             ) : null}
                             {item.defense ? (
-                              <p className="text-blue-400 text-sm">Defesa: +{item.defense}</p>
+                              <p className="text-blue-400 text-sm">Defesa: {item.defense}</p>
                             ) : null}
                           </div>
 

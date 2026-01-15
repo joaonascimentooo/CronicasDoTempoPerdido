@@ -10,8 +10,8 @@ export interface ShopItem {
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   price: number;
   quantity?: number;
-  damage?: number;
-  defense?: number;
+  damage?: string; // Notação RPG: 1d6, 2d8, etc
+  defense?: string; // Notação RPG: 1d4, 1d6, etc
   imageUrl?: string;
   effect?: string;
   createdBy?: string;

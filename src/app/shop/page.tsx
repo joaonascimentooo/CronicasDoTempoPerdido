@@ -365,13 +365,13 @@ export default function ShopPage() {
                         {item.damage && (
                           <p className="text-red-400 text-sm font-medium">
                             <Sword className="w-4 h-4 inline mr-2" />
-                            Dano: <strong>+{item.damage}</strong>
+                            Dano: <strong>{item.damage}</strong>
                           </p>
                         )}
                         {item.defense && (
                           <p className="text-blue-400 text-sm font-medium">
                             <Shield className="w-4 h-4 inline mr-2" />
-                            Defesa: <strong>+{item.defense}</strong>
+                            Defesa: <strong>{item.defense}</strong>
                           </p>
                         )}
                       </div>
