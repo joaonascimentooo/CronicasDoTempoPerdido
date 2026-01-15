@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { UserProfile } from '@/lib/types';
@@ -9,7 +10,6 @@ import { Motion, spring } from 'react-motion';
 import Link from 'next/link';
 
 export default function ViewProfilePage() {
-  const router = useRouter();
   const params = useParams();
   const profileId = params.id as string;
 
@@ -84,12 +84,14 @@ export default function ViewProfilePage() {
             {(style) => (
               <div style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }} className="flex flex-col md:flex-row items-center gap-8">
                 {/* Avatar */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {profile.imageUrl ? (
-                    <img
+                    <Image
                       src={profile.imageUrl}
                       alt={profile.username}
-                      className="w-32 h-32 rounded-lg object-cover border-2 border-orange-500/50"
+                      width={128}
+                      height={128}
+                      className="rounded-lg object-cover border-2 border-orange-500/50"
                     />
                   ) : (
                     <div className="w-32 h-32 bg-linear-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center text-4xl font-bold text-white border-2 border-orange-500/50">
