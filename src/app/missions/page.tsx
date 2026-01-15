@@ -82,14 +82,14 @@ export default function MissionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-slate-900 to-slate-800 flex items-center justify-center">
         <div className="text-white text-2xl">Carregando missões...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 px-6">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 py-12 px-6">
       <div className="w-full max-w-6xl mx-auto">
         {/* Header */}
         <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1, { delay: 0 }) }}>
@@ -97,12 +97,12 @@ export default function MissionsPage() {
             <div style={{ opacity: style.opacity }} className="text-center mb-16">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <Zap className="text-orange-400" size={40} />
-                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
+                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500">
                   Missões
                 </h1>
               </div>
               <p className="text-gray-400 text-lg">Ajude a proteger o tempo aceitando missões</p>
-              <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-500 mx-auto mt-6"></div>
+              <div className="w-24 h-1 bg-linear-to-r from-orange-400 to-orange-500 mx-auto mt-6"></div>
             </div>
           )}
         </Motion>
@@ -148,7 +148,7 @@ export default function MissionsPage() {
                   {(style) => (
                     <div
                       style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                      className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition group"
+                      className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500 transition group"
                     >
                       {/* Header */}
                       <div className="flex justify-between items-start gap-3 mb-3">
@@ -178,7 +178,7 @@ export default function MissionsPage() {
                       )}
 
                       {/* Rewards */}
-                      <div className="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-3 mb-4 border border-yellow-700/50">
+                      <div className="bg-linear-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-3 mb-4 border border-yellow-700/50">
                         <p className="text-sm font-bold text-yellow-300 mb-1">Recompensas:</p>
                         <div className="flex gap-3 text-sm">
                           <span>⭐ {mission.reward.experience} XP</span>
@@ -204,7 +204,7 @@ export default function MissionsPage() {
                         {!acceptedMissions.some(m => m.id === mission.id) ? (
                           <button
                             onClick={() => handleAcceptMission(mission.id)}
-                            className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50"
+                            className="flex-1 bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50"
                           >
                             Aceitar
                           </button>
@@ -238,7 +238,7 @@ export default function MissionsPage() {
                 {(style) => (
                   <div
                     style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
-                    className="bg-gradient-to-br from-indigo-700 to-slate-800 border border-indigo-500/30 rounded-xl p-6 group cursor-pointer hover:border-indigo-400 transition"
+                    className="bg-linear-to-br from-indigo-700 to-slate-800 border border-indigo-500/30 rounded-xl p-6 group cursor-pointer hover:border-indigo-400 transition"
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start gap-3 mb-3">
@@ -257,7 +257,7 @@ export default function MissionsPage() {
                     <p className="text-gray-300 text-sm mb-4 line-clamp-3">{mission.description}</p>
 
                     {/* Rewards */}
-                    <div className="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-3 mb-4 border border-yellow-700/50">
+                      <div className="bg-linear-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-3 mb-4 border border-yellow-700/50">
                       <p className="text-sm font-bold text-yellow-300 mb-1">Recompensas:</p>
                       <div className="flex gap-3 text-sm">
                         <span>⭐ {mission.reward.experience} XP</span>
@@ -267,7 +267,7 @@ export default function MissionsPage() {
 
                     <button
                       disabled
-                      className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-indigo-300 font-bold py-2 px-4 rounded-lg opacity-75 cursor-not-allowed"
+                      className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 text-indigo-300 font-bold py-2 px-4 rounded-lg opacity-75 cursor-not-allowed"
                     >
                       ✓ Missão Aceita
                     </button>
@@ -343,7 +343,7 @@ export default function MissionsPage() {
                 {/* Rewards */}
                 <div>
                   <h3 className="text-lg font-bold text-white mb-2">Recompensas</h3>
-                  <div className="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-4 border border-yellow-700/50 space-y-2">
+                  <div className="bg-linear-to-r from-yellow-900/40 to-orange-900/40 rounded-lg p-4 border border-yellow-700/50 space-y-2">
                     <p className="text-yellow-300 flex items-center gap-2">
                       <span className="text-2xl">⭐</span>
                       <span>{selectedMission.reward.experience} Pontos de Experiência</span>
@@ -372,7 +372,7 @@ export default function MissionsPage() {
                       handleAcceptMission(selectedMission.id);
                       setSelectedMission(null);
                     }}
-                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50 text-lg"
+                    className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-orange-600/50 text-lg"
                   >
                     Aceitar Missão
                   </button>

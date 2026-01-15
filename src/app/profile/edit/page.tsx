@@ -113,7 +113,7 @@ export default function EditProfile() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-xl text-orange-400 font-bold">Carregando...</div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function EditProfile() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative px-6 pt-24">
+      <section className="w-full min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden relative px-6 pt-24">
         <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
@@ -134,7 +134,7 @@ export default function EditProfile() {
           <Motion defaultStyle={{ opacity: 0, y: -40 }} style={{ opacity: spring(1), y: spring(0) }}>
             {(style) => (
               <div className="text-center mb-16" style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}>
-                <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500 mb-4">
+                <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-500 mb-4">
                   Editar Perfil
                 </h1>
                 <p className="text-gray-300 text-xl max-w-2xl mx-auto">
@@ -148,7 +148,7 @@ export default function EditProfile() {
             <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 200 }), y: spring(0, { delay: 200 }) }}>
               {(style) => (
                 <div
-                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
                   style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                 >
                   <label htmlFor="username" className="block text-sm font-bold mb-3 text-orange-400">
@@ -170,7 +170,7 @@ export default function EditProfile() {
             <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 300 }), y: spring(0, { delay: 300 }) }}>
               {(style) => (
                 <div
-                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
                   style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                 >
                   <label htmlFor="faction" className="block text-sm font-bold mb-3 text-orange-400">
@@ -192,7 +192,7 @@ export default function EditProfile() {
             <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 400 }), y: spring(0, { delay: 400 }) }}>
               {(style) => (
                 <div
-                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
                   style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                 >
                   <label htmlFor="imageUrl" className="block text-sm font-bold mb-3 text-orange-400">
@@ -224,7 +224,7 @@ export default function EditProfile() {
             <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1, { delay: 500 }), y: spring(0, { delay: 500 }) }}>
               {(style) => (
                 <div
-                  className="bg-gradient-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
+                  className="bg-linear-to-br from-slate-700 to-slate-800 border border-orange-500/30 hover:border-orange-500 rounded-xl p-8 transition"
                   style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
                 >
                   <label htmlFor="description" className="block text-sm font-bold mb-3 text-orange-400">
@@ -270,7 +270,7 @@ export default function EditProfile() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-700 disabled:to-orange-800 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105 shadow-lg"
+                    className="flex-1 bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-700 disabled:to-orange-800 text-white px-8 py-3 rounded-lg font-bold transition transform hover:scale-105 shadow-lg"
                   >
                     {submitting ? 'Salvando...' : 'Salvar Alterações'}
                   </button>
@@ -287,7 +287,7 @@ export default function EditProfile() {
           <Motion defaultStyle={{ opacity: 0, y: 20 }} style={{ opacity: spring(1), y: spring(0) }}>
             {(style) => (
               <div
-                className="bg-gradient-to-br from-red-950/30 to-red-900/30 border border-red-500/50 hover:border-red-500 rounded-xl p-8 transition"
+                className="bg-linear-to-br from-red-950/30 to-red-900/30 border border-red-500/50 hover:border-red-500 rounded-xl p-8 transition"
                 style={{ opacity: style.opacity, transform: `translateY(${style.y}px)` }}
               >
                 <h3 className="text-3xl font-black text-red-400 mb-4">⚠️ Zona de Perigo</h3>
