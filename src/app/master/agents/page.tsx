@@ -22,7 +22,7 @@ export default function AgentsManagementPage() {
     description: '',
     price: 0,
     imageUrl: '',
-    rarity: 'rare' as const,
+    rarity: 'rare' as 'common' | 'rare' | 'epic' | 'legendary',
     specialAbility: '',
     stats: {
       strength: 5,
@@ -87,7 +87,7 @@ export default function AgentsManagementPage() {
         description: '',
         price: 0,
         imageUrl: '',
-        rarity: 'rare',
+        rarity: 'rare' as 'common' | 'rare' | 'epic' | 'legendary',
         specialAbility: '',
         stats: {
           strength: 5,
