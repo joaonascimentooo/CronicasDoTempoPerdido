@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { User } from 'firebase/auth';
 import { onAuthChange, logoutUser } from '@/lib/authService';
 import { isMasterEmail } from '@/lib/profileService';
@@ -11,6 +12,8 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isShopPage = pathname === '/shop';
 
   useEffect(() => {
     const unsubscribe = onAuthChange((currentUser) => {
@@ -31,11 +34,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-slate-900 border-b border-slate-700 shadow-lg relative z-50">
+    <nav className={`${isShopPage ? 'bg-gradient-to-r from-stone-800/60 via-amber-900/40 to-stone-800/60 border-b border-yellow-700/30 shadow-lg backdrop-blur-md' : 'bg-slate-900 border-b border-slate-700 shadow-lg'} relative z-50`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="text-lg sm:text-2xl font-bold text-orange-500 hover:text-orange-400">
+            <Link href="/" className={`text-lg sm:text-2xl font-bold ${isShopPage ? 'text-amber-300 hover:text-amber-200' : 'text-orange-500 hover:text-orange-400'}`}>
               VIGIA
             </Link>
           </div>
@@ -43,45 +46,45 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden sm:flex items-center space-x-2 lg:space-x-4">
             {loading ? (
-              <span className="text-gray-400">...</span>
+              <span className={isShopPage ? 'text-gray-300' : 'text-gray-400'}>...</span>
             ) : user ? (
               <>
                 {isMasterEmail(user.email || '') && (
-                  <Link href="/master" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base">
+                  <Link href="/master" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base`}>
                     Painel Mestre
                   </Link>
                 )}
-                <Link href="/missions" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base">
+                <Link href="/missions" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base transition`}>
                   Missões
                 </Link>
-                <Link href="/ranking" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
+                <Link href="/ranking" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base transition`}>
                   Ranking
                 </Link>
-                <Link href="/team" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
+                <Link href="/team" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base transition`}>
                   Equipe
                 </Link>
-                <Link href="/shop" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
+                <Link href="/shop" className={`${isShopPage ? 'text-yellow-300 border-b-2 border-yellow-400' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base transition`}>
                   Loja
                 </Link>
-                <Link href="/profile" className="text-gray-300 hover:text-orange-400 font-bold text-sm lg:text-base transition">
+                <Link href="/profile" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold text-sm lg:text-base transition`}>
                   Meu Perfil
                 </Link>
-                <div className="text-xs lg:text-sm text-gray-400 truncate max-w-xs">
+                <div className={`text-xs lg:text-sm ${isShopPage ? 'text-amber-300/70' : 'text-gray-400'} truncate max-w-xs`}>
                   {user.email}
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg hover:shadow-red-600/50"
+                  className={`${isShopPage ? 'bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 hover:shadow-red-700/50' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-red-600/50'} px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg`}
                 >
                   Sair
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-gray-300 hover:text-orange-400 font-bold transition text-sm lg:text-base">
+                <Link href="/login" className={`${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold transition text-sm lg:text-base`}>
                   Login
                 </Link>
-                <Link href="/register" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg hover:shadow-orange-600/50">
+                <Link href="/register" className={`${isShopPage ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 hover:shadow-yellow-600/50' : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 hover:shadow-orange-600/50'} px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm lg:text-base shadow-lg`}>
                   Registrar
                 </Link>
               </>
@@ -92,7 +95,7 @@ export default function Navbar() {
           <div className="sm:hidden flex items-center">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-300 hover:text-white"
+              className={isShopPage ? 'text-amber-300 hover:text-amber-200' : 'text-gray-300 hover:text-white'}
             >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -103,13 +106,13 @@ export default function Navbar() {
         {menuOpen && (
           <div className="sm:hidden pb-4 space-y-2">
             {loading ? (
-              <span className="text-gray-400 block">...</span>
+              <span className={`${isShopPage ? 'text-gray-300' : 'text-gray-400'} block`}>...</span>
             ) : user ? (
               <>
                 {isMasterEmail(user.email || '') && (
                   <Link 
                     href="/master" 
-                    className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                    className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold py-2 transition`}
                     onClick={() => setMenuOpen(false)}
                   >
                     Painel Mestre
@@ -117,45 +120,45 @@ export default function Navbar() {
                 )}
                 <Link 
                   href="/missions" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold py-2 transition`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Missões
                 </Link>
                 <Link 
                   href="/ranking" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold py-2 transition`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Ranking
                 </Link>
                 <Link 
                   href="/team" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold py-2 transition`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Equipe
                 </Link>
                 <Link 
                   href="/shop" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  className={isShopPage ? `block text-yellow-300 font-bold py-2 transition border-l-4 border-yellow-400 pl-2` : `block text-gray-300 hover:text-orange-400 font-bold py-2 transition`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Loja
                 </Link>
                 <Link 
                   href="/profile" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold py-2 transition"
+                  className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold py-2 transition`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Meu Perfil
                 </Link>
-                <div className="text-xs text-gray-400 py-2 truncate">
+                <div className={`text-xs ${isShopPage ? 'text-amber-300/70' : 'text-gray-400'} py-2 truncate`}>
                   {user.email}
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm shadow-lg hover:shadow-red-600/50"
+                  className={`w-full ${isShopPage ? 'bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 hover:shadow-red-700/50' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-red-600/50'} px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-sm shadow-lg`}
                 >
                   Sair
                 </button>
@@ -164,14 +167,14 @@ export default function Navbar() {
               <>
                 <Link 
                   href="/login" 
-                  className="block text-gray-300 hover:text-orange-400 font-bold transition py-2"
+                  className={`block ${isShopPage ? 'text-amber-200 hover:text-amber-100' : 'text-gray-300 hover:text-orange-400'} font-bold transition py-2`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link 
                   href="/register" 
-                  className="block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-center shadow-lg hover:shadow-orange-600/50"
+                  className={`block ${isShopPage ? 'bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 hover:shadow-yellow-600/50' : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 hover:shadow-orange-600/50'} px-4 py-2 rounded-lg transition-all duration-200 text-white font-bold text-center shadow-lg`}
                   onClick={() => setMenuOpen(false)}
                 >
                   Registrar
