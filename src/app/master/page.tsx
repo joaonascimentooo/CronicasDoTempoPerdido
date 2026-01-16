@@ -274,6 +274,12 @@ export default function MasterPage() {
                   ✨ Gerenciar Itens da Loja
                 </Link>
                 <Link
+                  href="/master/agents"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white px-6 py-3 rounded-lg font-bold transition transform hover:scale-105 border border-red-500"
+                >
+                  🥋 Gerenciar Agentes
+                </Link>
+                <Link
                   href="/master/missions"
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-6 py-3 rounded-lg font-bold transition transform hover:scale-105 border border-blue-500"
                 >
